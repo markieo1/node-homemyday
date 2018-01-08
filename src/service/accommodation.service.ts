@@ -13,7 +13,7 @@ export class AccommodationService {
      * @param id The Object ID to search by.
      * @returns A single accommodation.
      */
-    public static async getAccommodation(id) {
+    public static async getAccommodation(id: string) {
         return await Accommodation.findById(id);
     }
 
