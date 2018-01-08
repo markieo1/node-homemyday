@@ -49,6 +49,17 @@ describe('Accommodation', () => {
             assert(accommodation.name === 'Test Accommodation');
         }));
 
+        it('Tries to fetch an accommodation by an invalid ID', mochaAsync(async () => {
+            const response = await request(app)
+            .get('/api/v1/accommodations/jklsiop')
+            .expect(400);
+
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
         after(mochaAsync(async () => {
             await Accommodation.remove({});
         }));
