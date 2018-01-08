@@ -14,7 +14,7 @@ describe('Accommodation', () => {
         before(mochaAsync(async () => {
             await mongoose.connection.dropDatabase();
 
-            // Create user
+            // Create accomodation
             const accommodation = new Accommodation({
                 name: 'Test Accommodation',
                 maxPersons: 4,
@@ -58,6 +58,26 @@ describe('Accommodation', () => {
 
             assert(err !== null);
             assert(err.errors.length > 0);
+        }));
+
+        it('Can create new accommodation', mochaAsync(async () => {
+            const oldCount = await Accommodation.count({});
+            const response = await request(app)
+            .post('/api/v1/accommodations')
+            .send({
+                name: 'TestName',
+                maxPersons: 2,
+                price: 0
+            })
+            .expect(201);
+
+            const { name, maxPersons, price } = response.body;
+            const newCount = await Accommodation.count({});
+
+            assert(oldCount + 1 === newCount);
+            assert(name === 'TestName');
+            assert(maxPersons === 2);
+            assert(price === 0);
         }));
 
         after(mochaAsync(async () => {

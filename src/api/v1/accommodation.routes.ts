@@ -1,6 +1,7 @@
 import express = require('express');
 
-import { Accommodation } from '../../model/accommodation.model';
+import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
+import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
@@ -46,9 +47,9 @@ routes.post('/', expressAsync(async (req, res, next) => {
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
         cancellationText: reqBody.cancellationText
-    };
+    } as IAccommodationDocument;
 
-    const accommodation = await Accommodation.create(newAccomodation);
+    const accommodation = await AccommodationService.addAccommodation(newAccomodation);
 
     res.status(201).send(accommodation);
 }));
