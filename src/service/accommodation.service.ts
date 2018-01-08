@@ -16,4 +16,11 @@ export class AccommodationService {
     public static async getAccommodation(id) {
         return await Accommodation.findById(id);
     }
+
+    /**
+     * @param id The Object ID to delete.
+     */
+    public static async deleteAccommodation(id) {
+        return await Accommodation.remove(id);
+    }
 }

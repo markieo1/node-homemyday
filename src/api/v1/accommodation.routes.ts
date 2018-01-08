@@ -21,16 +21,13 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 }));
 
 routes.delete('/:id', expressAsync(async (req, res, next) => {
-    const accommodationId = req.params.id;
-
-    const isValidId = mongoose.Types.ObjectId.isValid(accommodationId);
-    if (!isValidId) {
-        throw new ApiError(400, 'Invalid id supplied!');
-    }
-
-    await Accommodation.remove({ _id: accommodationId });
-
-    res.send(204).send();
+    await AccommodationService.deleteAccommodation(req.params.id)
+        .then(() => {
+            res.send(204).send();
+        })
+        .catch((error) => {
+            throw new ApiError(400, `Error occured while removing accommodation with id: ${req.params.id}`);
+        });
 }));
 
 export default routes;
