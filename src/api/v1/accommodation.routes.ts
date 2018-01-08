@@ -1,5 +1,6 @@
 import express = require('express');
 import * as mongoose from 'mongoose';
+
 import { Accommodation } from '../../model/accommodation.model';
 import { expressAsync } from '../../utils/express.async';
 import { ApiError } from '../errors/api.error';
