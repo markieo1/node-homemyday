@@ -76,5 +76,61 @@ describe('Accommodation', () => {
             assert(response !== null);
             assert(response.status === 204);
         }));
+
+        before(mochaAsync(async () => {
+            await mongoose.connection.dropDatabase();
+
+            // Create user
+            const accommodation = new Accommodation({
+                name: 'Test Accommodation',
+                maxPersons: 4,
+                price: '350'
+            });
+
+            await accommodation.save();
+
+            accommodationId = accommodation._id;
+        }));
+
+        it ('Can not delete an accommodation by invalid id', mochaAsync(async () => {
+            accommodationId = 'abcdefghjiklmnopqrstuvwxyz';
+            const response = await request(app)
+            .delete('/api/v1/accommodations/' + accommodationId)
+            .expect(400);
+
+            assert(response !== null);
+            assert(response.status === 400);
+        }));
+
+        before(mochaAsync(async () => {
+            await mongoose.connection.dropDatabase();
+
+            // Create user
+            const accommodation = new Accommodation({
+                name: 'Test Accommodation',
+                maxPersons: 4,
+                price: '350'
+            });
+
+            await accommodation.save();
+
+            accommodationId = accommodation._id;
+        }));
+
+        it ('Can not delete an accommodation by internal server error', mochaAsync(async () => {
+            await mongoose.connection.close()
+            .then(() => {
+                const promise = mochaAsync(async () => {
+                    const response = await request(app)
+                    .delete('/api/v1/accommodations/' + accommodationId)
+                    .expect(500);
+
+                    assert(response !== null);
+                    assert(response.status === 500);
+
+                    this.done();
+                });
+            });
+        }));
     });
 });
