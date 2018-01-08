@@ -2,21 +2,22 @@ import express = require('express');
 import * as mongoose from 'mongoose';
 
 import { Accommodation } from '../../model/accommodation.model';
+import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ApiError } from '../errors/api.error';
 
 const routes = express.Router();
 
 routes.get('/', expressAsync(async (req, res, next) => {
-    const accommodations = await Accommodation.find({});
+    const accommodations = await AccommodationService.getAccommodations();
 
-    res.send(accommodations);
+    res.json(accommodations);
 }));
 
 routes.get('/:id', expressAsync(async (req, res, next) => {
-    const accommodation = await Accommodation.findById(req.params.id);
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
 
-    res.send(accommodation);
+    res.json(accommodation);
 }));
 
 routes.delete('/:id', expressAsync(async (req, res, next) => {
