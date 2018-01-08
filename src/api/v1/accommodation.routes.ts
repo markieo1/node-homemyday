@@ -1,21 +1,28 @@
 import express = require('express');
 
 import { Accommodation } from '../../model/accommodation.model';
-import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
+import { ValidationHelper } from '../../utils/validationhelper';
+import { ApiError } from '../errors/index';
 
 const routes = express.Router();
 
 routes.get('/', expressAsync(async (req, res, next) => {
-    const accommodations = await Accommodation.find({});
+    const accommodations = await AccommodationService.getAccommodations();
 
-    res.send(accommodations);
+    res.json(accommodations);
 }));
 
 routes.get('/:id', expressAsync(async (req, res, next) => {
-    const accommodation = await Accommodation.findById(req.params.id);
 
-    res.send(accommodation);
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    res.json(accommodation);
 }));
 
 routes.post('/', expressAsync(async (req, res, next) => {
@@ -39,7 +46,7 @@ routes.post('/', expressAsync(async (req, res, next) => {
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
         cancellationText: reqBody.cancellationText
-    } as IAccommodationDocument;
+    };
 
     const accommodation = await Accommodation.create(newAccomodation);
 
