@@ -6,16 +6,12 @@ const port = 8000;
 const mongoServerInstance = new MongoInMemory(port);
 
 before(mochaAsync(async () => {
-    mongoServerInstance.start(async (error, config) => {
-        if (error) {
-            console.error(error);
-        } else {
-            const mongouri = mongoServerInstance.getMongouri('homemyday_test');
+    await mongoServerInstance.start();
 
-            await mongoose.connect(mongouri, {
-                useMongoClient: true
-            });
-        }
+    const mongouri = mongoServerInstance.getMongouri('homemyday_test');
+
+    await mongoose.connect(mongouri, {
+        useMongoClient: true
     });
 }));
 
