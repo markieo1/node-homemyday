@@ -23,7 +23,7 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 routes.delete('/:id', expressAsync(async (req, res, next) => {
     await AccommodationService.deleteAccommodation(req.params.id)
         .then(() => {
-            res.send(204).send();
+            res.sendStatus(204);
         })
         .catch((error) => {
             throw new ApiError(400, `Error occured while removing accommodation with id: ${req.params.id}`);

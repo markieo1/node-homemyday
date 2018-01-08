@@ -52,5 +52,29 @@ describe('Accommodation', () => {
         after(mochaAsync(async () => {
             await Accommodation.remove({});
         }));
+
+        before(mochaAsync(async () => {
+            await mongoose.connection.dropDatabase();
+
+            // Create user
+            const accommodation = new Accommodation({
+                name: 'Test Accommodation',
+                maxPersons: 4,
+                price: '350'
+            });
+
+            await accommodation.save();
+
+            accommodationId = accommodation._id;
+        }));
+
+        it ('Can delete an accommodation by id', mochaAsync(async () => {
+            const response = await request(app)
+            .delete('/api/v1/accommodations/' + accommodationId)
+            .expect(204);
+
+            assert(response !== null);
+            assert(response.status === 204);
+        }));
     });
 });
