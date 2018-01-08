@@ -20,9 +20,9 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 
 routes.post('/', expressAsync(async (req, res, next) => {
     const reqBody = req.body;
-    
+
     const newAccomodation = {
-        
+
     } as IAccommodationDocument;
 
     const accommodation = await Accommodation.create();
