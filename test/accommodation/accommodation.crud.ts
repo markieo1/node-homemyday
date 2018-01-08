@@ -11,9 +11,7 @@ describe('Accommodation', () => {
 
         let accommodationId;
 
-        before(mochaAsync(async () => {
-            await mongoose.connection.dropDatabase();
-
+        beforeEach(mochaAsync(async () => {
             // Create user
             const accommodation = new Accommodation({
                 name: 'Test Accommodation',
@@ -28,8 +26,8 @@ describe('Accommodation', () => {
 
         it('Can get all accommodations', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations')
-            .expect(200);
+                .get('/api/v1/accommodations')
+                .expect(200);
 
             const accommodations = response.body;
 
@@ -40,8 +38,8 @@ describe('Accommodation', () => {
 
         it('Can get an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations/' + accommodationId)
-            .expect(200);
+                .get('/api/v1/accommodations/' + accommodationId)
+                .expect(200);
 
             const accommodation = response.body;
 
@@ -51,8 +49,8 @@ describe('Accommodation', () => {
 
         it('Tries to fetch an accommodation by an invalid ID', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations/jklsiop')
-            .expect(400);
+                .get('/api/v1/accommodations/jklsiop')
+                .expect(400);
 
             const err = response.body;
 
@@ -60,88 +58,26 @@ describe('Accommodation', () => {
             assert(err.errors.length > 0);
         }));
 
-        after(mochaAsync(async () => {
-            await Accommodation.remove({});
-        }));
-
-        before(mochaAsync(async () => {
-            await mongoose.connection.dropDatabase();
-
-            // Create user
-            const accommodation = new Accommodation({
-                name: 'Test Accommodation',
-                maxPersons: 4,
-                price: '350'
-            });
-
-            await accommodation.save();
-
-            accommodationId = accommodation._id;
-        }));
-
-        it ('Can delete an accommodation by id', mochaAsync(async () => {
+        it('Can delete an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
-            .delete('/api/v1/accommodations/' + accommodationId)
-            .expect(204);
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(204);
 
             assert(response !== null);
             assert(response.status === 204);
         }));
 
-        before(mochaAsync(async () => {
-            await mongoose.connection.dropDatabase();
-
-            // Create user
-            const accommodation = new Accommodation({
-                name: 'Test Accommodation',
-                maxPersons: 4,
-                price: '350'
-            });
-
-            await accommodation.save();
-
-            accommodationId = accommodation._id;
-        }));
-
-        it ('Can not delete an accommodation by invalid id', mochaAsync(async () => {
-            accommodationId = 'abcdefghjiklmnopqrstuvwxyz';
+        it('Can not delete an accommodation by invalid id', mochaAsync(async () => {
             const response = await request(app)
-            .delete('/api/v1/accommodations/' + accommodationId)
-            .expect(400);
+                .delete('/api/v1/accommodations/abcdefghjiklmnopqrstuvwxyz')
+                .expect(400);
 
             assert(response !== null);
             assert(response.status === 400);
         }));
 
-        before(mochaAsync(async () => {
-            await mongoose.connection.dropDatabase();
-
-            // Create user
-            const accommodation = new Accommodation({
-                name: 'Test Accommodation',
-                maxPersons: 4,
-                price: '350'
-            });
-
-            await accommodation.save();
-
-            accommodationId = accommodation._id;
-        }));
-
-        it ('Can not delete an accommodation by internal server error', mochaAsync(async () => {
-            await mongoose.connection.close()
-            .then(() => {
-                const promise = mochaAsync(async () => {
-                    const response = await request(app)
-                    .delete('/api/v1/accommodations/' + accommodationId)
-                    .expect(500);
-
-                    assert(response !== null);
-                    assert(response.status === 500);
-
-                    this.done();
-                });
-            });
+        afterEach(mochaAsync(async () => {
+            await Accommodation.remove({});
         }));
     });
 });

@@ -33,13 +33,8 @@ routes.delete('/:id', expressAsync(async (req, res, next) => {
         throw new ApiError(400, 'Invalid id supplied!');
     }
 
-    await AccommodationService.deleteAccommodation(accommodationId)
-        .then(() => {
-            res.sendStatus(204);
-        })
-        .catch((error) => {
-            throw new ApiError(500, `Error occured while removing accommodation with id: ${accommodationId}`);
-        });
+    await AccommodationService.deleteAccommodation(accommodationId);
+    res.sendStatus(204);
 }));
 
 export default routes;
