@@ -67,7 +67,7 @@ describe('Accommodation', () => {
             .send({
                 name: 'TestName',
                 maxPersons: 2,
-                price: 0
+                price: '200'
             })
             .expect(201);
 
@@ -77,7 +77,7 @@ describe('Accommodation', () => {
             assert(oldCount + 1 === newCount);
             assert(name === 'TestName');
             assert(maxPersons === 2);
-            assert(price === 0);
+            assert(price === '200');
         }));
 
         after(mochaAsync(async () => {
