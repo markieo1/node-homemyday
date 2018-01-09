@@ -24,6 +24,6 @@ export class AccommodationService {
      * @param id The Object ID to delete.
      */
     public static async deleteAccommodation(id) {
-        return await Accommodation.remove(id);
+        return await Accommodation.findByIdAndRemove(id);
     }
 }

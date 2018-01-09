@@ -1,5 +1,4 @@
 import express = require('express');
-import * as mongoose from 'mongoose';
 
 import { Accommodation } from '../../model/accommodation.model';
 import { AccommodationService } from '../../service/accommodation.service';
@@ -31,8 +30,12 @@ routes.delete('/:id', expressAsync(async (req, res, next) => {
         throw new ApiError(400, 'Invalid id supplied!');
     }
 
-    await AccommodationService.deleteAccommodation(req.params.id);
-    res.sendStatus(204);
+    const response = await AccommodationService.deleteAccommodation(req.params.id);
+    if (!response) {
+        throw new ApiError(400, 'Invalid id supplied!');
+    } else {
+        res.sendStatus(204);
+    }
 }));
 
 export default routes;

@@ -67,13 +67,29 @@ describe('Accommodation', () => {
         }));
 
         it('Can not delete an accommodation by invalid id', mochaAsync(async () => {
+            await request(app)
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(204);
+
+            const response = await request(app)
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(400);
+
+            assert(response !== null);
+
+            const err = response.body;
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
+        it('Can not delete an accommodation by invalid format id', mochaAsync(async () => {
             const response = await request(app)
                 .delete('/api/v1/accommodations/abcdefghjiklmnopqrstuvwxyz')
                 .expect(400);
 
             assert(response !== null);
-            const err = response.body;
 
+            const err = response.body;
             assert(err !== null);
             assert(err.errors.length > 0);
         }));
