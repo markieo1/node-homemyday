@@ -27,12 +27,11 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 }));
 
 routes.delete('/:id', expressAsync(async (req, res, next) => {
-    const accommodationId = req.params.id;
-    if (!ValidationHelper.isValidMongoId(accommodationId)) {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid id supplied!');
     }
 
-    await AccommodationService.deleteAccommodation(accommodationId);
+    await AccommodationService.deleteAccommodation(req.params.id);
     res.sendStatus(204);
 }));
 
