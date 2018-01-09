@@ -4,6 +4,7 @@ import { IAccommodationDocument } from '../model/schemas/accommodation.schema';
 export class AccommodationService {
 
     /**
+     * Gets a list of accommodations
      * @returns All accommodations from the Mongo database.
      */
     public static async getAccommodations() {
@@ -11,6 +12,7 @@ export class AccommodationService {
     }
 
     /**
+     * Gets an accommodation of the ID
      * @param id The Object ID to search by.
      * @returns A single accommodation.
      */
@@ -25,5 +27,13 @@ export class AccommodationService {
      */
     public static async updateAccommodation(id: string, accommodation: IAccommodationDocument) {
         return await Accommodation.findByIdAndUpdate(id, accommodation, { new: true });
+    }
+
+    /*
+     * Deletes an accommodation of the ID
+     * @param id The Object ID to delete.
+     */
+    public static async deleteAccommodation(id) {
+        return await Accommodation.findByIdAndRemove(id);
     }
 }
