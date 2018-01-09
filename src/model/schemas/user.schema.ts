@@ -3,7 +3,7 @@ import { Document, Schema } from 'mongoose';
 import uniqueValidator = require('mongoose-unique-validator');
 
 export interface IUserDocument extends Document {
-    username: string;
+    email: string;
     password: string;
     role: UserRoles;
 }
