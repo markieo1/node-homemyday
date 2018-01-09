@@ -29,7 +29,7 @@ export class AccommodationService {
         return await Accommodation.findByIdAndUpdate(id, accommodation, { new: true });
     }
 
-    /*
+    /**
      * Deletes an accommodation of the ID
      * @param id The Object ID to delete.
      */
