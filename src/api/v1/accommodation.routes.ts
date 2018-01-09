@@ -28,8 +28,7 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 
 routes.delete('/:id', expressAsync(async (req, res, next) => {
     const accommodationId = req.params.id;
-    const isValidId = mongoose.Types.ObjectId.isValid(accommodationId);
-    if (!isValidId) {
+    if (!ValidationHelper.isValidMongoId(accommodationId)) {
         throw new ApiError(400, 'Invalid id supplied!');
     }
 
