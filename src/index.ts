@@ -11,6 +11,18 @@ import { Config } from './config/config.const';
 const port = Config.port;
 const app = express();
 
+mongoose.Promise = global.Promise;
+
+if (process.env.NODE_ENV !== 'test') {
+    // Connect to MongoDB.
+    mongoose.connect(Config.mongoDbUri,
+        { useMongoClient: true });
+    mongoose.connection.on('error', (error) => {
+        console.error('MongoDB connection error. Please make sure MongoDB is running.', error);
+        process.exit(1);
+    });
+}
+
 app.use(helmet());
 
 app.use(bodyParser.json());
