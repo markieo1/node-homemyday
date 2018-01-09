@@ -66,7 +66,7 @@ describe('Accommodation', () => {
             assert(response !== null);
         }));
 
-        it('Can not delete an accommodation by invalid id', mochaAsync(async () => {
+        it('Can not delete accommodation by an already deleted id', mochaAsync(async () => {
             await request(app)
                 .delete('/api/v1/accommodations/' + accommodationId)
                 .expect(204);
