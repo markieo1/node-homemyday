@@ -51,3 +51,10 @@ export const AccommodationSchema: Schema = new Schema({
     rulesText: String,
     cancellationText: String
 });
+
+// Add id prop to the json and remove _id and __v from the json when sending the json
+AccommodationSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: (doc, ret) => { delete ret._id; }
+});
