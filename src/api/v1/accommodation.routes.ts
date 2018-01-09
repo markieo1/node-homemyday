@@ -54,4 +54,17 @@ routes.post('/', expressAsync(async (req, res, next) => {
     res.status(201).send(accommodation);
 }));
 
+routes.delete('/:id', expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid id supplied!');
+    }
+
+    const response = await AccommodationService.deleteAccommodation(req.params.id);
+    if (!response) {
+        throw new ApiError(400, 'Invalid id supplied!');
+    } else {
+        res.sendStatus(204);
+    }
+}));
+
 export default routes;

@@ -11,9 +11,7 @@ describe('Accommodation', () => {
 
         let accommodationId;
 
-        before(mochaAsync(async () => {
-            await mongoose.connection.dropDatabase();
-
+        beforeEach(mochaAsync(async () => {
             // Create accomodation
             const accommodation = new Accommodation({
                 name: 'Test Accommodation',
@@ -28,8 +26,8 @@ describe('Accommodation', () => {
 
         it('Can get all accommodations', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations')
-            .expect(200);
+                .get('/api/v1/accommodations')
+                .expect(200);
 
             const accommodations = response.body;
 
@@ -40,8 +38,8 @@ describe('Accommodation', () => {
 
         it('Can get an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations/' + accommodationId)
-            .expect(200);
+                .get('/api/v1/accommodations/' + accommodationId)
+                .expect(200);
 
             const accommodation = response.body;
 
@@ -51,11 +49,47 @@ describe('Accommodation', () => {
 
         it('Tries to fetch an accommodation by an invalid ID', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations/jklsiop')
-            .expect(400);
+                .get('/api/v1/accommodations/jklsiop')
+                .expect(400);
 
             const err = response.body;
 
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
+        it('Can delete an accommodation by id', mochaAsync(async () => {
+            const response = await request(app)
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(204);
+
+            assert(response !== null);
+        }));
+
+        it('Can not delete accommodation by an already deleted id', mochaAsync(async () => {
+            await request(app)
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(204);
+
+            const response = await request(app)
+                .delete('/api/v1/accommodations/' + accommodationId)
+                .expect(400);
+
+            assert(response !== null);
+
+            const err = response.body;
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
+        it('Can not delete an accommodation by invalid format id', mochaAsync(async () => {
+            const response = await request(app)
+                .delete('/api/v1/accommodations/abcdefghjiklmnopqrstuvwxyz')
+                .expect(400);
+
+            assert(response !== null);
+
+            const err = response.body;
             assert(err !== null);
             assert(err.errors.length > 0);
         }));
@@ -117,7 +151,7 @@ describe('Accommodation', () => {
             assert(err.errors.length > 0);
         }));
 
-        after(mochaAsync(async () => {
+        afterEach(mochaAsync(async () => {
             await Accommodation.remove({});
         }));
     });
