@@ -9,7 +9,7 @@ const app = require('../../src/index').default;
 describe('Authentication', () => {
 
     // Add user
-    before(mochaAsync(async () => {
+    beforeEach(mochaAsync(async () => {
         const user = new User({
             email: 'test@example.com',
             password: 'Test Password'
@@ -32,7 +32,7 @@ describe('Authentication', () => {
         const response = await request(app)
         .post('/api/v1/authentication/register')
         .send({
-            email: 'test2@example.com',
+            email: 'test@example.com',
             password: 'secret'
         })
         .expect(400);
@@ -44,7 +44,7 @@ describe('Authentication', () => {
     }));
 
     // Remove all users
-    after(mochaAsync(async () => {
+    afterEach(mochaAsync(async () => {
         await User.remove({});
     }));
 });
