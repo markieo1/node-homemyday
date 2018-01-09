@@ -61,7 +61,7 @@ describe('Accommodation', () => {
         }));
 
         it('Can create new accommodation', mochaAsync(async () => {
-            const oldCount = await Accommodation.count({});
+            const count = await Accommodation.count({});
             const response = await request(app)
             .post('/api/v1/accommodations')
             .send({
@@ -74,10 +74,28 @@ describe('Accommodation', () => {
             const { name, maxPersons, price } = response.body;
             const newCount = await Accommodation.count({});
 
-            assert(oldCount + 1 === newCount);
+            assert(count + 1 === newCount);
             assert(name === 'TestName');
             assert(maxPersons === 2);
             assert(price === '200');
+        }));
+
+        it('Tries to create new accomodations without some required props', mochaAsync(async () => {
+            const count = await Accommodation.count({});
+            const response = await request(app)
+            .post('/api/v1/accommodations')
+            .send({
+                maxPersons: 2,
+                price: '200'
+            })
+            .expect(400);
+
+            const err = response.body;
+            const newCount = await Accommodation.count({});
+
+            assert(count === newCount);
+            assert(err !== null);
+            assert(err.errors.length > 0);
         }));
 
         after(mochaAsync(async () => {

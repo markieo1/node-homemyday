@@ -19,6 +19,7 @@ export class AccommodationService {
     }
 
     /**
+     * Create a new accomodation
      * @param accomodation the accomodation object.
      * @returns A new accommodation.
      */
