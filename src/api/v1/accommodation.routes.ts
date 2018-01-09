@@ -68,6 +68,8 @@ routes.put('/:id', expressAsync(async (req, res, next) => {
     } catch (err) {
         if (err instanceof CastError as any) {
             throw new ApiError(400, err.path + ' must be of type ' + err.kind);
+        } else {
+            throw err;
         }
     }
 
