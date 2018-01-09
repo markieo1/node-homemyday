@@ -3,6 +3,7 @@ import 'mocha';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 import { Accommodation } from '../../src/model/accommodation.model';
+import { AccommodationService } from '../../src/service/accommodation.service';
 import { mochaAsync } from '../test.helper';
 const app = require('../../src/index').default;
 
@@ -52,6 +53,34 @@ describe('Accommodation', () => {
         it('Tries to fetch an accommodation by an invalid ID', mochaAsync(async () => {
             const response = await request(app)
             .get('/api/v1/accommodations/jklsiop')
+            .expect(400);
+
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
+        it('Can update an accommodation', mochaAsync(async () => {
+
+            const accommodation = await AccommodationService.getAccommodation(accommodationId);
+            accommodation.name = 'Update Accommodation Test';
+
+            const response = await request(app)
+            .put('/api/v1/accommodations/' + accommodationId)
+            .send(accommodation)
+            .expect(200);
+
+            const newAccommodation = response.body;
+
+            assert(newAccommodation !== null);
+            assert(newAccommodation.name === 'Update Accommodation Test');
+        }));
+
+        it('Tries to update an accommodation by an invalid ID', mochaAsync(async () => {
+            const response = await request(app)
+            .put('/api/v1/accommodations/jklsiop')
+            .send({ name: 'Invalid' })
             .expect(400);
 
             const err = response.body;

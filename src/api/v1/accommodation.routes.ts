@@ -25,4 +25,15 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
     res.json(accommodation);
 }));
 
+routes.put('/:id', expressAsync(async (req, res, next) => {
+
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.updateAccommodation(req.params.id, req.body);
+
+    res.json(accommodation);
+}));
+
 export default routes;

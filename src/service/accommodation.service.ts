@@ -1,4 +1,5 @@
-import { Accommodation, IAccommodationModel } from '../model/accommodation.model';
+import { Accommodation } from '../model/accommodation.model';
+import { IAccommodationDocument } from '../model/schemas/accommodation.schema';
 
 export class AccommodationService {
 
@@ -15,5 +16,14 @@ export class AccommodationService {
      */
     public static async getAccommodation(id: string) {
         return await Accommodation.findById(id);
+    }
+
+    /**
+     * Updates a single accommodation.
+     * @param id The ID of the accommodation to update.
+     * @param accommodation The new values for the accommodation.
+     */
+    public static async updateAccommodation(id: string, accommodation: IAccommodationDocument) {
+        return await Accommodation.findByIdAndUpdate(id, accommodation, { new: true });
     }
 }
