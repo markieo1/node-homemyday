@@ -64,7 +64,6 @@ describe('Accommodation', () => {
                 .expect(204);
 
             assert(response !== null);
-            assert(response.status === 204);
         }));
 
         it('Can not delete an accommodation by invalid id', mochaAsync(async () => {
@@ -73,7 +72,10 @@ describe('Accommodation', () => {
                 .expect(400);
 
             assert(response !== null);
-            assert(response.status === 400);
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
         }));
 
         afterEach(mochaAsync(async () => {
