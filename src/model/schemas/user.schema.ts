@@ -5,7 +5,7 @@ import uniqueValidator = require('mongoose-unique-validator');
 export interface IUserDocument extends Document {
     username: string;
     password: string;
-    role: string;
+    role: UserRoles;
 }
 
 export enum UserRoles {
