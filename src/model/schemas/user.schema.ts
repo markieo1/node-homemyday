@@ -14,7 +14,7 @@ export enum UserRoles {
 }
 
 const userSchema: Schema = new Schema({
-    username: {
+    email: {
         type: String,
         required: true,
         unique: true
@@ -45,6 +45,7 @@ userSchema.pre('save', async function(next) {
         }
     } catch (e) {
         next(e);
+        return;
     }
 
     next();
