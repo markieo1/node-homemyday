@@ -98,6 +98,25 @@ describe('Accommodation', () => {
             assert(err.errors.length > 0);
         }));
 
+        it('Tries to create new accomodations with invalid props type', mochaAsync(async () => {
+            const count = await Accommodation.count({});
+            const response = await request(app)
+            .post('/api/v1/accommodations')
+            .send({
+                name: 'TestName',
+                maxPersons: 'Test',
+                price: '200'
+            })
+            .expect(400);
+
+            const err = response.body;
+            const newCount = await Accommodation.count({});
+
+            assert(count === newCount);
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
         after(mochaAsync(async () => {
             await Accommodation.remove({});
         }));
