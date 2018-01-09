@@ -15,7 +15,6 @@ routes.get('/authentication', (req, res) => {
     const usr = sanitize(req.body.username);
     const pwd = sanitize(req.body.password);
 
-
     User.findOne({username: usr}).then((user) => {
 
         // res.status(200).json(user);
@@ -29,13 +28,9 @@ routes.post('/register', expressAsync(async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    // Hash the password for 10 rounds
-    const hash = await bcrypt.hash(password, 10);
-
     const user = new User({
         username,
-        password: hash,
-        role: 'User'
+        password
     });
 
     await user.save();
