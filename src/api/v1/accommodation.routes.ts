@@ -1,5 +1,6 @@
 import express = require('express');
 
+import { CastError } from 'mongoose';
 import { Accommodation } from '../../model/accommodation.model';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
@@ -31,7 +32,15 @@ routes.put('/:id', expressAsync(async (req, res, next) => {
         throw new ApiError(400, 'Invalid ID!');
     }
 
-    const accommodation = await AccommodationService.updateAccommodation(req.params.id, req.body);
+    let accommodation;
+
+    try {
+        accommodation = await AccommodationService.updateAccommodation(req.params.id, req.body);
+    } catch (err) {
+        if (err instanceof CastError as any) {
+            throw new ApiError(400, err.path + ' must be of type ' + err.kind);
+        }
+    }
 
     res.json(accommodation);
 }));

@@ -123,6 +123,23 @@ describe('Accommodation', () => {
             assert(err.errors.length > 0);
         }));
 
+        it('Tries to update an accommodation with invalid values', mochaAsync(async () => {
+            let accommodation = await AccommodationService.getAccommodation(accommodationId) as any;
+            // Convert to plain object and give it an invalid value
+            accommodation = accommodation.toObject();
+            accommodation.maxPersons = 'A million!!';
+
+            const response = await request(app)
+            .put('/api/v1/accommodations/' + accommodationId)
+            .send(accommodation)
+            .expect(400);
+
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
         afterEach(mochaAsync(async () => {
             await Accommodation.remove({});
         }));
