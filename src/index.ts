@@ -6,7 +6,7 @@ import mongoose = require('mongoose');
 import * as logger from 'morgan';
 import * as apiRoutes from './api';
 import { Config } from './config/config.const';
-import { ApiError } from './errors';
+import { ApiError, AuthenticationError } from './errors';
 
 const port = Config.port;
 const app = express();
@@ -57,6 +57,15 @@ app.use('*', (req, res) => {
 app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error('An error has occured!', err.message);
     next(err);
+});
+
+app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof AuthenticationError) {
+        const authError = err as AuthenticationError;
+        next(new ApiError(401, authError.message));
+    } else {
+        next(err);
+    }
 });
 
 app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {

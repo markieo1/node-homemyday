@@ -1,4 +1,5 @@
 import express = require('express');
+import { authenticationMiddleware } from '../middleware/index';
 import accommodationRoutes from './accommodation.routes';
 import authenticationRoutes from './authentication.routes';
 

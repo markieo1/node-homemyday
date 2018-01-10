@@ -3,11 +3,32 @@ import 'mocha';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 import { Accommodation } from '../../src/model/accommodation.model';
+import { User } from '../../src/model/user.model';
 import { AccommodationService } from '../../src/service/accommodation.service';
 import { mochaAsync } from '../test.helper';
 const app = require('../../src/index').default;
 
 describe('Accommodation', () => {
+    let userToken: string;
+
+    before(mochaAsync(async () => {
+        const user = new User({
+            email: 'test@test.com',
+            password: 'Test Password'
+        });
+
+        await user.save();
+
+        const response = await request(app).post('/api/v1/authentication/login').send({
+            email: 'test@test.com',
+            password: 'Test Password',
+        }).expect(200);
+
+        const { token } = response.body;
+
+        userToken = token;
+    }));
+
     describe('Create Read Update Delete', () => {
 
         let accommodationId;
@@ -23,6 +44,12 @@ describe('Accommodation', () => {
             await accommodation.save();
 
             accommodationId = accommodation._id;
+        }));
+
+        it('Can\'t make an request to the Accommodations without being authenticated', mochaAsync(async () => {
+            const response = await request(app)
+                .post('/api/v1/accommodations')
+                .expect(401);
         }));
 
         it('Can get all accommodations', mochaAsync(async () => {
@@ -62,6 +89,7 @@ describe('Accommodation', () => {
         it('Can delete an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
                 .delete('/api/v1/accommodations/' + accommodationId)
+                .set('Authorization', `Bearer ${userToken}`)
                 .expect(204);
 
             assert(response !== null);
@@ -70,10 +98,12 @@ describe('Accommodation', () => {
         it('Can not delete accommodation by an already deleted id', mochaAsync(async () => {
             await request(app)
                 .delete('/api/v1/accommodations/' + accommodationId)
+                .set('Authorization', `Bearer ${userToken}`)
                 .expect(204);
 
             const response = await request(app)
                 .delete('/api/v1/accommodations/' + accommodationId)
+                .set('Authorization', `Bearer ${userToken}`)
                 .expect(400);
 
             assert(response !== null);
@@ -86,6 +116,7 @@ describe('Accommodation', () => {
         it('Can not delete an accommodation by invalid format id', mochaAsync(async () => {
             const response = await request(app)
                 .delete('/api/v1/accommodations/abcdefghjiklmnopqrstuvwxyz')
+                .set('Authorization', `Bearer ${userToken}`)
                 .expect(400);
 
             assert(response !== null);
@@ -101,9 +132,10 @@ describe('Accommodation', () => {
             accommodation.name = 'Update Accommodation Test';
 
             const response = await request(app)
-            .put('/api/v1/accommodations/' + accommodationId)
-            .send(accommodation)
-            .expect(200);
+                .put('/api/v1/accommodations/' + accommodationId)
+                .set('Authorization', `Bearer ${userToken}`)
+                .send(accommodation)
+                .expect(200);
 
             const newAccommodation = response.body;
 
@@ -113,9 +145,10 @@ describe('Accommodation', () => {
 
         it('Tries to update an accommodation by an invalid ID', mochaAsync(async () => {
             const response = await request(app)
-            .put('/api/v1/accommodations/jklsiop')
-            .send({ name: 'Invalid' })
-            .expect(400);
+                .put('/api/v1/accommodations/jklsiop')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({ name: 'Invalid' })
+                .expect(400);
 
             const err = response.body;
 
@@ -130,9 +163,10 @@ describe('Accommodation', () => {
             accommodation.maxPersons = 'A million!!';
 
             const response = await request(app)
-            .put('/api/v1/accommodations/' + accommodationId)
-            .send(accommodation)
-            .expect(400);
+                .put('/api/v1/accommodations/' + accommodationId)
+                .set('Authorization', `Bearer ${userToken}`)
+                .send(accommodation)
+                .expect(400);
 
             const err = response.body;
 
@@ -143,13 +177,14 @@ describe('Accommodation', () => {
         it('Can create new accommodation', mochaAsync(async () => {
             const count = await Accommodation.count({});
             const response = await request(app)
-            .post('/api/v1/accommodations')
-            .send({
-                name: 'TestName',
-                maxPersons: 2,
-                price: '200'
-            })
-            .expect(201);
+                .post('/api/v1/accommodations')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    name: 'TestName',
+                    maxPersons: 2,
+                    price: '200'
+                })
+                .expect(201);
 
             const { name, maxPersons, price } = response.body;
             const newCount = await Accommodation.count({});
@@ -163,12 +198,13 @@ describe('Accommodation', () => {
         it('Tries to create new accomodations without some required props', mochaAsync(async () => {
             const count = await Accommodation.count({});
             const response = await request(app)
-            .post('/api/v1/accommodations')
-            .send({
-                maxPersons: 2,
-                price: '200'
-            })
-            .expect(400);
+                .post('/api/v1/accommodations')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    maxPersons: 2,
+                    price: '200'
+                })
+                .expect(400);
 
             const err = response.body;
             const newCount = await Accommodation.count({});
@@ -181,13 +217,14 @@ describe('Accommodation', () => {
         it('Tries to create new accomodations with invalid props type', mochaAsync(async () => {
             const count = await Accommodation.count({});
             const response = await request(app)
-            .post('/api/v1/accommodations')
-            .send({
-                name: 'TestName',
-                maxPersons: 'Test',
-                price: '200'
-            })
-            .expect(400);
+                .post('/api/v1/accommodations')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    name: 'TestName',
+                    maxPersons: 'Test',
+                    price: '200'
+                })
+                .expect(400);
 
             const err = response.body;
             const newCount = await Accommodation.count({});
@@ -201,4 +238,8 @@ describe('Accommodation', () => {
             await Accommodation.remove({});
         }));
     });
+
+    after(mochaAsync(async () => {
+        await User.remove({});
+    }));
 });
