@@ -13,6 +13,10 @@ routes.post('/login', expressAsync(async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    if (!email || !password) {
+        throw new ApiError(400, 'Invalid email or password!');
+    }
+
     const user = await User.findOne({email});
 
     const result = await user.comparePassword(password);
