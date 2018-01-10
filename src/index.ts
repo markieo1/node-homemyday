@@ -5,8 +5,8 @@ import * as http from 'http';
 import mongoose = require('mongoose');
 import * as logger from 'morgan';
 import * as apiRoutes from './api';
-import { ApiError } from './api/errors';
 import { Config } from './config/config.const';
+import { ApiError } from './errors';
 
 const port = Config.port;
 const app = express();
