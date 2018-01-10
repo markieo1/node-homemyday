@@ -86,7 +86,7 @@ describe('Authentication', () => {
 
     it('Returns a 401 if no authorization header is provided', mochaAsync(async () => {
         const response = await request(app)
-            .get('/api/v1/accommodations')
+            .post('/api/v1/accommodations')
             .expect(401);
 
         const { errors } = response.body;
@@ -97,7 +97,7 @@ describe('Authentication', () => {
 
     it('Returns a 401 if an invalid token is provided', mochaAsync(async () => {
         const response = await request(app)
-            .get('/api/v1/accommodations')
+            .post('/api/v1/accommodations')
             .set('Authorization', 'Bearer 1232525')
             .expect(401);
 

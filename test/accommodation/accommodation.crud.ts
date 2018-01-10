@@ -48,14 +48,13 @@ describe('Accommodation', () => {
 
         it('Can\'t make an request to the Accommodations without being authenticated', mochaAsync(async () => {
             const response = await request(app)
-                .get('/api/v1/accommodations')
+                .post('/api/v1/accommodations')
                 .expect(401);
         }));
 
         it('Can get all accommodations', mochaAsync(async () => {
             const response = await request(app)
                 .get('/api/v1/accommodations')
-                .set('Authorization', `Bearer ${userToken}`)
                 .expect(200);
 
             const accommodations = response.body;
@@ -68,7 +67,6 @@ describe('Accommodation', () => {
         it('Can get an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
                 .get('/api/v1/accommodations/' + accommodationId)
-                .set('Authorization', `Bearer ${userToken}`)
                 .expect(200);
 
             const accommodation = response.body;
@@ -80,7 +78,6 @@ describe('Accommodation', () => {
         it('Tries to fetch an accommodation by an invalid ID', mochaAsync(async () => {
             const response = await request(app)
                 .get('/api/v1/accommodations/jklsiop')
-                .set('Authorization', `Bearer ${userToken}`)
                 .expect(400);
 
             const err = response.body;
