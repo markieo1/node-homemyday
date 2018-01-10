@@ -7,6 +7,7 @@ import { IAccommodationDocument } from '../../model/schemas/accommodation.schema
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
+import { authenticationMiddleware } from '../middleware/index';
 
 const routes = express.Router();
 
@@ -27,15 +28,14 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
     res.json(accommodation);
 }));
 
-routes.post('/', expressAsync(async (req, res, next) => {
+routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) => {
     const reqBody = req.body;
     const accommodation = await AccommodationService.addAccommodation(reqBody as IAccommodationDocument);
 
     res.status(201).send(accommodation);
 }));
 
-routes.put('/:id', expressAsync(async (req, res, next) => {
-
+routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
@@ -55,7 +55,7 @@ routes.put('/:id', expressAsync(async (req, res, next) => {
     res.json(accommodation);
 }));
 
-routes.delete('/:id', expressAsync(async (req, res, next) => {
+routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid id supplied!');
     }
