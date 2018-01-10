@@ -3,6 +3,7 @@ import 'mocha';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 import { User } from '../../src/model/user.model';
+import { AuthenticationService } from '../../src/service/authentication.service';
 import { mochaAsync } from '../test.helper';
 const app = require('../../src/index').default;
 
@@ -53,6 +54,10 @@ describe('Authentication', () => {
 
         assert(body !== null);
         assert(body.token);
+
+        const tokenObj = AuthenticationService.decodeToken(body.token);
+
+        assert(tokenObj.email === 'test@example.com');
     }));
 
     it('Tries to log in with an incorrect email and password', mochaAsync(async () => {

@@ -1,12 +1,12 @@
 import express = require('express');
 
 import { CastError } from 'mongoose';
+import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
-import { ApiError } from '../errors/index';
 
 const routes = express.Router();
 

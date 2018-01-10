@@ -1,10 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import express = require('express');
 import { ValidationError } from 'mongoose';
+import { ApiError, AuthenticationError } from '../../errors/index';
+import { IUserDocument } from '../../model/schemas/user.schema';
 import User from '../../model/user.model';
 import { AuthenticationService } from '../../service/authentication.service';
 import { expressAsync } from '../../utils/express.async';
-import { ApiError } from '../errors/api.error';
 
 const routes = express.Router();
 
@@ -17,15 +18,19 @@ routes.post('/login', expressAsync(async (req, res, next) => {
         throw new ApiError(400, 'Invalid email or password!');
     }
 
-    const user = await User.findOne({email});
+    let user: IUserDocument;
 
-    const result = await user.comparePassword(password);
-
-    if (!result) {
-        throw new ApiError(400, 'Invalid email or password!');
+    try {
+        user = await AuthenticationService.authenticateUser(email, password);
+    } catch (e) {
+        if (e instanceof AuthenticationError) {
+            throw new ApiError(400, e.message);
+        } else {
+            throw e;
+        }
     }
 
-    const token = AuthenticationService.generateToken(user.email);
+    const token = AuthenticationService.generateToken(user);
 
     res.status(200).json({ token });
 }));
