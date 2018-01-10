@@ -4,6 +4,7 @@ import { IUserToken } from '../../model/iusertoken.interface';
 import { AuthenticationService } from '../../service/authentication.service';
 import { UserService } from '../../service/user.service';
 import { expressAsync } from '../../utils/express.async';
+import { ValidationHelper } from '../../utils/validationhelper';
 
 const authenticationMiddleware = expressAsync(
     async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -34,6 +35,10 @@ const authenticationMiddleware = expressAsync(
             parsedToken = AuthenticationService.decodeToken(token) as IUserToken;
         } catch (e) {
             throw new AuthenticationError('Token decoding failed');
+        }
+
+        if (!ValidationHelper.isValidMongoId(parsedToken.id)) {
+            throw new AuthenticationError('Invalid id provided!');
         }
 
         // Load the user
