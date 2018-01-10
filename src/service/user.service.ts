@@ -7,6 +7,6 @@ export class UserService {
      * @returns A single user.
      */
     public static async getUser(id: string) {
-        return await User.findById(id);
+        return await User.findById(id, { password: false });
     }
 }

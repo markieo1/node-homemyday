@@ -11,9 +11,9 @@ before(mochaAsync(async () => {
     const mongouri = mongoServerInstance.getMongouri('homemyday_test');
 
     try {
-    await mongoose.connect(mongouri, {
-        useMongoClient: true
-    });
+        await mongoose.connect(mongouri, {
+            useMongoClient: true
+        });
     } catch (e) {
         console.log(e);
     }

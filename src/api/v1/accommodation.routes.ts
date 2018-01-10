@@ -7,6 +7,7 @@ import { IAccommodationDocument } from '../../model/schemas/accommodation.schema
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
+import { authenticationMiddleware } from '../middleware/index';
 
 const routes = express.Router();
 

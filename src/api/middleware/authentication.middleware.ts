@@ -1,8 +1,11 @@
 import * as express from 'express';
+import { AuthenticationError } from '../../errors/index';
+import { IUserToken } from '../../model/iusertoken.interface';
+import { AuthenticationService } from '../../service/authentication.service';
 import { UserService } from '../../service/user.service';
 import { expressAsync } from '../../utils/express.async';
 
-const paginateMiddleware = expressAsync(
+const authenticationMiddleware = expressAsync(
     async (req: express.Request, res: express.Response, next: express.NextFunction) => {
         let token: string;
         if (req.headers && req.headers.authorization) {
@@ -16,18 +19,33 @@ const paginateMiddleware = expressAsync(
                     token = credentials;
                 }
             }
+        } else {
+            throw new AuthenticationError('Authorization header not provided');
         }
 
         if (!token) {
             // Error because no token specified
+            throw new AuthenticationError('Token not provided');
         }
 
         // Validate the token
+        let parsedToken: IUserToken;
+        try {
+            parsedToken = AuthenticationService.decodeToken(token) as IUserToken;
+        } catch (e) {
+            throw new AuthenticationError('Token decoding failed');
+        }
 
         // Load the user
-        const user = await UserService.getUser('');
+        const user = await UserService.getUser(parsedToken.id);
+
+        if (!user) {
+            throw new AuthenticationError('User not found!');
+        }
+
         req.authenticatedUser = user;
+
         next();
     });
 
-export default paginateMiddleware;
+export { authenticationMiddleware };

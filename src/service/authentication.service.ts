@@ -1,9 +1,9 @@
+import * as jwt from 'jsonwebtoken';
 import { Config } from '../config/config.const';
 import { AuthenticationError } from '../errors/index';
+import { IUserToken } from '../model/iusertoken.interface';
 import { IUserDocument } from '../model/schemas/user.schema';
 import { IUserModel, User } from '../model/user.model';
-
-import * as jwt from 'jsonwebtoken';
 
 export class AuthenticationService {
 
@@ -15,7 +15,7 @@ export class AuthenticationService {
      * @throws An instance of AuthenticationError, if the login attempt was not successful.
      */
     public static async authenticateUser(email: string, password: string): Promise<IUserDocument> {
-        const user = await User.findOne({email});
+        const user = await User.findOne({ email });
         const result = await user.comparePassword(password);
 
         if (!result) {
@@ -31,8 +31,13 @@ export class AuthenticationService {
      * @returns A JWT token in string form.
      */
     public static generateToken(user: IUserDocument): string {
+        const payload: IUserToken = {
+            id: user.id,
+            email: user.email,
+            role: user.role
+        };
 
-        const token = jwt.sign({id: user.id, email: user.email, role: user.role}, Config.secret, {
+        const token = jwt.sign(payload, Config.secret, {
             expiresIn: Config.expirationSeconds
         });
 
@@ -44,8 +49,8 @@ export class AuthenticationService {
      * @param token The token to decode.
      * @returns An object containing the token payload.
      */
-    public static decodeToken(token: string) {
-        const user = jwt.verify(token, Config.secret) as any;
-        return user;
+    public static decodeToken(token: string): string | object {
+        const parsedObject = jwt.verify(token, Config.secret);
+        return parsedObject;
     }
 }
