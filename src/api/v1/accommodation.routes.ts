@@ -28,6 +28,13 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
+routes.get('/awaiting', authenticationMiddleware, expressAsync(async (req, res, next) => {
+
+    const accommodations = await AccommodationService.getAwaitingAccommodations();
+    res.json(accommodations);
+
+}));
+
 routes.get('/me', authenticationMiddleware, expressAsync(async (req, res, next) => {
     // Get the user id
     const userId = req.authenticatedUser.id;

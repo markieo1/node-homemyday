@@ -12,6 +12,14 @@ export class AccommodationService {
     }
 
     /**
+     * Gets a list of awaiting accommodations
+     * @returns All awaiting accommodations from the Mongo database.
+     */
+    public static async getAwaitingAccommodations() {
+        return await Accommodation.find({'approveStatus.status': 'Awaiting'});
+    }
+
+    /**
      * Gets an accommodation of the ID
      * @param id The Object ID to search by.
      * @returns A single accommodation.

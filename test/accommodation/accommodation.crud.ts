@@ -75,6 +75,35 @@ describe('Accommodation', () => {
             assert(accommodations[0].name === 'Test Accommodation');
         }));
 
+        it('Can get all awaiting accommodations', mochaAsync(async () => {
+            // Create accomodation
+            await new Accommodation({
+                name: 'Test Accommodation 1',
+                maxPersons: 4,
+                price: 350,
+                userId: createdUserId,
+                approveStatus: {status: 'Awaiting'}
+            }).save();
+
+            await new Accommodation({
+                name: 'Test Accommodation 1',
+                maxPersons: 4,
+                price: 350,
+                userId: createdUserId,
+                approveStatus: {status: 'Approved'}
+            }).save();
+
+            const response = await request(app)
+                .get('/api/v1/accommodations/awaiting')
+                .set('Authorization', `Bearer ${userToken}`)
+                .expect(200);
+
+            const accommodations = response.body;
+            const count = await Accommodation.count({'approveStatus.status': 'Awaiting'});
+            assert(accommodations !== null);
+            assert(accommodations.length === 2);
+        }));
+
         it('Can get an accommodation by id', mochaAsync(async () => {
             const response = await request(app)
                 .get('/api/v1/accommodations/' + accommodationId)
@@ -109,10 +138,8 @@ describe('Accommodation', () => {
                 .expect(200);
 
             const accommodations = response.body;
-
             assert(accommodations);
             assert(accommodations.length > 0);
-            assert(accommodations[0].name = 'Test Accommodation');
         }));
 
         it('Tries to search for accommodations in a location without results', mochaAsync(async () => {
