@@ -12,7 +12,7 @@ export interface IAccommodationDocument extends Document {
     rooms: number;
     beds: number;
     recommended: boolean;
-    price: string;
+    price: number;
     spaceText: string;
     servicesText: string;
     pricesText: string;
@@ -47,7 +47,7 @@ export const AccommodationSchema: Schema = new Schema({
         default: false
     },
     price: {
-        type: String,
+        type: Number,
         required: true
     },
     spaceText: String,
@@ -58,12 +58,36 @@ export const AccommodationSchema: Schema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         required: true
-    }
+    },
+    bookings: [{
+        bookingId: Number,
+        dateFrom: Date,
+        dateTo: Date
+    }]
+});
+
+// Store prices as cents to prevent floating point errors
+// Result is wrapped in a Number() call to prevent trailing zeroes
+AccommodationSchema.path('price').get((num) => {
+    return Number((num / 100).toFixed(2));
+});
+
+AccommodationSchema.path('price').set((num) => {
+    return num * 100;
 });
 
 // Add id prop to the json and remove _id and __v from the json when sending the json
 AccommodationSchema.set('toJSON', {
     virtuals: true,
     versionKey: false,
-    transform: (doc, ret) => { delete ret._id; }
+    getters: true,
+    transform: (doc, ret) => {
+        delete ret._id;
+        delete ret.bookings;
+    }
+});
+
+// Make getters work on find
+AccommodationSchema.set('toObject', {
+    getters: true
 });
