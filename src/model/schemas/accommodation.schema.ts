@@ -12,7 +12,7 @@ export interface IAccommodationDocument extends Document {
     rooms: number;
     beds: number;
     recommended: boolean;
-    price: string;
+    price: number;
     spaceText: string;
     servicesText: string;
     pricesText: string;
@@ -42,14 +42,28 @@ export const AccommodationSchema: Schema = new Schema({
         default: false
     },
     price: {
-        type: String,
+        type: Number,
         required: true
     },
     spaceText: String,
     servicesText: String,
     pricesText: String,
     rulesText: String,
-    cancellationText: String
+    cancellationText: String,
+    bookings: [{
+        bookingId: Number,
+        dateFrom: Date,
+        dateTo: Date
+    }]
+});
+
+// Store prices as cents to prevent floating point errors
+AccommodationSchema.path('price').get((num) => {
+    return (num / 100).toFixed(2);
+});
+
+AccommodationSchema.path('price').set((num) => {
+    return num * 100;
 });
 
 // Add id prop to the json and remove _id and __v from the json when sending the json
