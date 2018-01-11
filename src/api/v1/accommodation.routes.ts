@@ -45,6 +45,10 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 
     const accommodation = await AccommodationService.getAccommodation(req.params.id);
 
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
     res.json(accommodation);
 }));
 
