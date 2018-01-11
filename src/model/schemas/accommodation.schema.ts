@@ -81,7 +81,10 @@ AccommodationSchema.set('toJSON', {
     virtuals: true,
     versionKey: false,
     getters: true,
-    transform: (doc, ret) => { delete ret._id; }
+    transform: (doc, ret) => {
+        delete ret._id;
+        delete ret.bookings;
+    }
 });
 
 // Make getters work on find

@@ -33,13 +33,13 @@ export class AccommodationService {
 
         // Find all accommodations which match or partially match the given location.
         // Filters out any accommodations that are already booked within the given timeframe.
-        // https://stackoverflow.com/a/325964/3714134
+        // https://stackoverflow.com/a/26877645/3714134
         return await Accommodation.find({
             location: { $regex: location, $options: 'i' },
             maxPersons: { $gte: persons },
             bookings: {
                 $not: {
-                    $elemMatch: { dateFrom: { $gte: to }, dateTo: { $lte: from } }
+                    $elemMatch: { dateFrom: { $lt: to }, dateTo: { $gt: from } }
                 }
             }
         });

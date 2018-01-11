@@ -310,8 +310,6 @@ describe('Accommodation', () => {
             const { name, maxPersons, price, userId } = response.body;
             const newCount = await Accommodation.count({});
 
-            console.log(response.body);
-
             assert(count + 1 === newCount);
             assert(name === 'TestName');
             assert(maxPersons === 2);
