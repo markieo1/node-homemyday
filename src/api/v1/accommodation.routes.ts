@@ -28,6 +28,15 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
+routes.get('/me', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    // Get the user id
+    const userId = req.authenticatedUser.id;
+
+    const accommodations = await AccommodationService.getForUser(userId);
+
+    res.json(accommodations);
+}));
+
 routes.get('/:id', expressAsync(async (req, res, next) => {
 
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
@@ -40,6 +49,9 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 }));
 
 routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    // Get the user id
+    const userId = req.authenticatedUser._id;
+
     const reqBody = req.body;
 
     const newAccomodation = {
@@ -59,7 +71,8 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         servicesText: reqBody.servicesText,
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
-        cancellationText: reqBody.cancellationText
+        cancellationText: reqBody.cancellationText,
+        userId
     } as IAccommodationDocument;
 
     const accommodation = await AccommodationService.addAccommodation(newAccomodation);

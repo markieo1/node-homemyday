@@ -18,6 +18,11 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
+
+    /**
+     * The id of the user that created this accommodation
+     */
+    userId: Schema.Types.ObjectId;
 }
 
 export const AccommodationSchema: Schema = new Schema({
@@ -50,6 +55,10 @@ export const AccommodationSchema: Schema = new Schema({
     pricesText: String,
     rulesText: String,
     cancellationText: String,
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
     bookings: [{
         bookingId: Number,
         dateFrom: Date,
