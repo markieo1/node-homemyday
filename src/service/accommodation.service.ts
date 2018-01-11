@@ -21,6 +21,16 @@ export class AccommodationService {
     }
 
     /**
+     * Gets the accommodations for one user
+     * @param id The id of the user
+     */
+    public static async getForUser(userId: string) {
+        return await Accommodation.find({
+            userId
+        });
+    }
+
+    /**
      * Create a new accomodation
      * @param accomodation the accomodation object.
      * @returns A new accommodation.

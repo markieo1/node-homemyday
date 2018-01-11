@@ -3,6 +3,7 @@ import 'mocha';
 import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 import { Accommodation } from '../../src/model/accommodation.model';
+import { IAccommodationDocument } from '../../src/model/schemas/accommodation.schema';
 import { User } from '../../src/model/user.model';
 import { AccommodationService } from '../../src/service/accommodation.service';
 import { mochaAsync } from '../test.helper';
@@ -258,6 +259,49 @@ describe('Accommodation', () => {
             assert(maxPersons === 2);
             assert(price === '200');
             assert(createdUserId === userId);
+        }));
+
+        it('Can get all accommodations created by the current logged in user', mochaAsync(async () => {
+            // Create accomodation
+            await new Accommodation({
+                name: 'Test Accommodation 1',
+                maxPersons: 4,
+                price: '350',
+                userId: createdUserId
+            }).save();
+
+            await new Accommodation({
+                name: 'Test Accommodation 2',
+                maxPersons: 4,
+                price: '35000',
+                userId: createdUserId
+            }).save();
+
+            // This accommodation has another id
+            await new Accommodation({
+                name: 'Test Accommodation 3',
+                maxPersons: 2,
+                price: '3150',
+                userId: '5a55e64a6bcbbb0d306f1cf0'
+            }).save();
+
+            const count = await Accommodation.count({
+                userId: createdUserId
+            });
+
+            const response = await request(app)
+                .get('/api/v1/accommodations/me')
+                .set('Authorization', `Bearer ${userToken}`)
+                .expect(200);
+
+            const body = response.body;
+
+            assert(body instanceof Array);
+
+            const array = body as any[];
+            assert(array.length === count);
+
+            assert(array.every((x) => x.userId === createdUserId));
         }));
 
         afterEach(mochaAsync(async () => {
