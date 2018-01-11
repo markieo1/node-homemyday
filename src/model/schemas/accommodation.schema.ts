@@ -1,4 +1,6 @@
 import { Document, Schema } from 'mongoose';
+import { AccommodationApprove } from '../accommodation.approve.model';
+import { ApproveStatus } from './accommodation.approve.schema';
 
 export interface IAccommodationDocument extends Document {
     name: string;
@@ -49,7 +51,11 @@ export const AccommodationSchema: Schema = new Schema({
     servicesText: String,
     pricesText: String,
     rulesText: String,
-    cancellationText: String
+    cancellationText: String,
+    approveStatus: {
+        type: AccommodationApprove,
+        default: ApproveStatus.Awaiting
+    }
 });
 
 // Add id prop to the json and remove _id and __v from the json when sending the json
