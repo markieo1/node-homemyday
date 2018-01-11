@@ -1,16 +1,10 @@
-FROM node:8
+FROM node:8-slim
 
-# Copy source code
-COPY . /src
+WORKDIR /server
 
-# Change working directory
-WORKDIR /src
-
-# Install dependencies
+COPY . /server
 RUN npm install
+RUN npm run tsc
 
-# Launch application
-CMD ["npm","run", "start.prod"]
-
-# Expose API port to the outside
 EXPOSE 3000
+CMD [ "npm", "run", "start.prod" ]
