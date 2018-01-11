@@ -12,7 +12,15 @@ import { authenticationMiddleware } from '../middleware/index';
 const routes = express.Router();
 
 routes.get('/', expressAsync(async (req, res, next) => {
-    const accommodations = await AccommodationService.getAccommodations();
+
+    let accommodations;
+
+    if (req.query.search && req.query.dateFrom && req.query.dateTo && req.query.maxPersons) {
+        accommodations = await AccommodationService.searchAccommodations(req.query.search, req.query.dateFrom, req.query.dateTo, req.query.maxPersons);
+    }
+    else {
+        accommodations = await AccommodationService.getAccommodations();
+    }
 
     res.json(accommodations);
 }));
