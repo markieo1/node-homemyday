@@ -7,14 +7,13 @@ export enum ApproveStatus {
   }
 
 export interface IAccommodationApproveDocument extends Document {
-    approveStatus: ApproveStatus;
+    status: ApproveStatus;
     reason: string;
 }
 
 export const AccommodationApproveSchema: Schema = new Schema({
-    approveStatus: {
-        type: String,
-        enum: ApproveStatus,
+    status: {
+        type: ApproveStatus,
         default: ApproveStatus.Awaiting
     },
     reason: String

@@ -1,6 +1,6 @@
 import { Document, Schema } from 'mongoose';
-import { AccommodationApprove } from '../accommodation.approve.model';
-import { ApproveStatus } from './accommodation.approve.schema';
+import { AccommodationApprove, IAccommodationApproveModel } from '../accommodation.approve.model';
+import { AccommodationApproveSchema, ApproveStatus } from './accommodation.approve.schema';
 
 export interface IAccommodationDocument extends Document {
     name: string;
@@ -20,7 +20,7 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
-    approveStatus: ApproveStatus;
+    approveStatus: IAccommodationApproveModel;
     /**
      * The id of the user that created this accommodation
      */
@@ -58,8 +58,8 @@ export const AccommodationSchema: Schema = new Schema({
     rulesText: String,
     cancellationText: String,
     approveStatus: {
-        type: AccommodationApprove,
-        default: ApproveStatus.Awaiting
+        type: AccommodationApproveSchema,
+        default: AccommodationApproveSchema
     },
     userId: {
         type: Schema.Types.ObjectId,
