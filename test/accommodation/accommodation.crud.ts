@@ -10,6 +10,7 @@ const app = require('../../src/index').default;
 
 describe('Accommodation', () => {
     let userToken: string;
+    let createdUserId: string;
 
     before(mochaAsync(async () => {
         const user = new User({
@@ -18,6 +19,8 @@ describe('Accommodation', () => {
         });
 
         await user.save();
+
+        createdUserId = user.id;
 
         const response = await request(app).post('/api/v1/authentication/login').send({
             email: 'test@test.com',
@@ -38,7 +41,8 @@ describe('Accommodation', () => {
             const accommodation = new Accommodation({
                 name: 'Test Accommodation',
                 maxPersons: 4,
-                price: '350'
+                price: '350',
+                userId: createdUserId
             });
 
             await accommodation.save();
@@ -232,6 +236,28 @@ describe('Accommodation', () => {
             assert(count === newCount);
             assert(err !== null);
             assert(err.errors.length > 0);
+        }));
+
+        it('Can create an accommodation and add the current authenticated user id to it', mochaAsync(async () => {
+            const count = await Accommodation.count({});
+            const response = await request(app)
+                .post('/api/v1/accommodations')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({
+                    name: 'TestName',
+                    maxPersons: 2,
+                    price: '200'
+                })
+                .expect(201);
+
+            const { name, maxPersons, price, userId } = response.body;
+            const newCount = await Accommodation.count({});
+
+            assert(count + 1 === newCount);
+            assert(name === 'TestName');
+            assert(maxPersons === 2);
+            assert(price === '200');
+            assert(createdUserId === userId);
         }));
 
         afterEach(mochaAsync(async () => {
