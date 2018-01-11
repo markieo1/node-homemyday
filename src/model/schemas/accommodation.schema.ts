@@ -20,6 +20,11 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
+    approveStatus: ApproveStatus;
+    /**
+     * The id of the user that created this accommodation
+     */
+    userId: Schema.Types.ObjectId;
 }
 
 export const AccommodationSchema: Schema = new Schema({
@@ -55,6 +60,10 @@ export const AccommodationSchema: Schema = new Schema({
     approveStatus: {
         type: AccommodationApprove,
         default: ApproveStatus.Awaiting
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
     }
 });
 

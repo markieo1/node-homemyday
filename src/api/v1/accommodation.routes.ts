@@ -17,6 +17,15 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
+routes.get('/me', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    // Get the user id
+    const userId = req.authenticatedUser.id;
+
+    const accommodations = await AccommodationService.getForUser(userId);
+
+    res.json(accommodations);
+}));
+
 routes.get('/:id', expressAsync(async (req, res, next) => {
 
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
@@ -29,8 +38,32 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
 }));
 
 routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    // Get the user id
+    const userId = req.authenticatedUser._id;
+
     const reqBody = req.body;
-    const accommodation = await AccommodationService.addAccommodation(reqBody as IAccommodationDocument);
+
+    const newAccomodation = {
+        name: reqBody.name,
+        description: reqBody.description,
+        maxPersons: reqBody.maxPersons,
+        continent: reqBody.continent,
+        country: reqBody.country,
+        location: reqBody.location,
+        latitude: reqBody.latitude,
+        longitude: reqBody.longitude,
+        rooms: reqBody.rooms,
+        beds: reqBody.beds,
+        price: reqBody.price,
+        spaceText: reqBody.spaceText,
+        servicesText: reqBody.servicesText,
+        pricesText: reqBody.pricesText,
+        rulesText: reqBody.rulesText,
+        cancellationText: reqBody.cancellationText,
+        userId
+    } as IAccommodationDocument;
+
+    const accommodation = await AccommodationService.addAccommodation(newAccomodation);
 
     res.status(201).send(accommodation);
 }));
