@@ -21,9 +21,34 @@ export class AccommodationService {
     }
 
     /**
-     * Gets the accommodations for one user
-     * @param id The id of the user
+     * Gets all accommodations that match the given search parameters.
+     * Will only return accommodations that can fit the requested amount of persons.
+     * Will also only return accommodations which are not already booked in the requested timeframe.
+     * @param location The location of the accommodation.
+     * @param from The start date of the search.
+     * @param to The end date of the search.
+     * @param persons The amount of persons that the accommodation has to hold.
      */
+    public static async searchAccommodations(location: string, from: Date, to: Date, persons: number) {
+
+        // Find all accommodations which match or partially match the given location.
+        // Filters out any accommodations that are already booked within the given timeframe.
+        // https://stackoverflow.com/a/26877645/3714134
+        return await Accommodation.find({
+            location: { $regex: location, $options: 'i' },
+            maxPersons: { $gte: persons },
+            bookings: {
+                $not: {
+                    $elemMatch: { dateFrom: { $lt: to }, dateTo: { $gt: from } }
+                }
+            }
+        });
+    }
+
+   /**
+    * Gets the accommodations for one user
+    * @param id The id of the user
+    */
     public static async getForUser(userId: string) {
         return await Accommodation.find({
             userId
