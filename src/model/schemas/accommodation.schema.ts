@@ -67,8 +67,9 @@ export const AccommodationSchema: Schema = new Schema({
 });
 
 // Store prices as cents to prevent floating point errors
+// Result is wrapped in a Number() call to prevent trailing zeroes
 AccommodationSchema.path('price').get((num) => {
-    return (num / 100).toFixed(2);
+    return Number((num / 100).toFixed(2));
 });
 
 AccommodationSchema.path('price').set((num) => {
@@ -79,5 +80,11 @@ AccommodationSchema.path('price').set((num) => {
 AccommodationSchema.set('toJSON', {
     virtuals: true,
     versionKey: false,
+    getters: true,
     transform: (doc, ret) => { delete ret._id; }
+});
+
+// Make getters work on find
+AccommodationSchema.set('toObject', {
+    getters: true
 });

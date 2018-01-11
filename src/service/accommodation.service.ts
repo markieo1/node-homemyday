@@ -36,7 +36,7 @@ export class AccommodationService {
         // https://stackoverflow.com/a/325964/3714134
         return await Accommodation.find({
             location: { $regex: location, $options: 'i' },
-            maxPersons: { $gt: persons },
+            maxPersons: { $gte: persons },
             bookings: {
                 $not: {
                     $elemMatch: { dateFrom: { $gte: to }, dateTo: { $lte: from } }

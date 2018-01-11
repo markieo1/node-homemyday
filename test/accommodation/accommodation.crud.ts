@@ -42,8 +42,14 @@ describe('Accommodation', () => {
             const accommodation = new Accommodation({
                 name: 'Test Accommodation',
                 maxPersons: 4,
-                price: '350',
-                userId: createdUserId
+                price: 350,
+                location: 'Barcelona',
+                userId: createdUserId,
+                bookings: [{
+                    bookingId: 1,
+                    dateFrom: new Date('2017-02-01'),
+                    dateTo: new Date('2017-02-07')
+                }]
             });
 
             await accommodation.save();
@@ -89,6 +95,56 @@ describe('Accommodation', () => {
 
             assert(err !== null);
             assert(err.errors.length > 0);
+        }));
+
+        it('Can search for an accommodation', mochaAsync(async () => {
+            const response = await request(app)
+            .get('/api/v1/accommodations')
+            .query({
+                search: 'Barcelona',
+                dateFrom: '2017-03-01',
+                dateTo: '2017-03-07',
+                persons: 2
+            })
+            .expect(200);
+
+            const accommodations = response.body;
+
+            assert(accommodations);
+            assert(accommodations.length > 0);
+            assert(accommodations[0].name = 'Test Accommodation');
+        }));
+
+        it('Tries to search for accommodations in a location without results', mochaAsync(async () => {
+            const response = await request(app)
+            .get('/api/v1/accommodations')
+            .query({
+                search: 'Neptune',
+                dateFrom: '2017-03-01',
+                dateTo: '2017-03-07',
+                persons: 2
+            })
+            .expect(200);
+
+            const accommodations = response.body;
+
+            assert(accommodations.length === 0);
+        }));
+
+        it('Tries to search for accommodations that are already taken', mochaAsync(async () => {
+            const response = await request(app)
+            .get('/api/v1/accommodations')
+            .query({
+                search: 'Barcelona',
+                dateFrom: '2017-02-01',
+                dateTo: '2017-02-10',
+                persons: 2
+            })
+            .expect(200);
+
+            const accommodations = response.body;
+
+            assert(accommodations.length === 0);
         }));
 
         it('Can delete an accommodation by id', mochaAsync(async () => {
@@ -187,7 +243,7 @@ describe('Accommodation', () => {
                 .send({
                     name: 'TestName',
                     maxPersons: 2,
-                    price: '200'
+                    price: 200
                 })
                 .expect(201);
 
@@ -197,7 +253,7 @@ describe('Accommodation', () => {
             assert(count + 1 === newCount);
             assert(name === 'TestName');
             assert(maxPersons === 2);
-            assert(price === '200');
+            assert(price === 200);
         }));
 
         it('Tries to create new accomodations without some required props', mochaAsync(async () => {
@@ -207,7 +263,7 @@ describe('Accommodation', () => {
                 .set('Authorization', `Bearer ${userToken}`)
                 .send({
                     maxPersons: 2,
-                    price: '200'
+                    price: 200
                 })
                 .expect(400);
 
@@ -227,7 +283,7 @@ describe('Accommodation', () => {
                 .send({
                     name: 'TestName',
                     maxPersons: 'Test',
-                    price: '200'
+                    price: 200
                 })
                 .expect(400);
 
@@ -247,17 +303,19 @@ describe('Accommodation', () => {
                 .send({
                     name: 'TestName',
                     maxPersons: 2,
-                    price: '200'
+                    price: 200
                 })
                 .expect(201);
 
             const { name, maxPersons, price, userId } = response.body;
             const newCount = await Accommodation.count({});
 
+            console.log(response.body);
+
             assert(count + 1 === newCount);
             assert(name === 'TestName');
             assert(maxPersons === 2);
-            assert(price === '200');
+            assert(price === 200);
             assert(createdUserId === userId);
         }));
 
@@ -266,14 +324,14 @@ describe('Accommodation', () => {
             await new Accommodation({
                 name: 'Test Accommodation 1',
                 maxPersons: 4,
-                price: '350',
+                price: 350,
                 userId: createdUserId
             }).save();
 
             await new Accommodation({
                 name: 'Test Accommodation 2',
                 maxPersons: 4,
-                price: '35000',
+                price: 35000,
                 userId: createdUserId
             }).save();
 
@@ -281,7 +339,7 @@ describe('Accommodation', () => {
             await new Accommodation({
                 name: 'Test Accommodation 3',
                 maxPersons: 2,
-                price: '3150',
+                price: 3150,
                 userId: '5a55e64a6bcbbb0d306f1cf0'
             }).save();
 

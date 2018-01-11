@@ -18,8 +18,8 @@ routes.get('/', expressAsync(async (req, res, next) => {
     if (req.query.search && req.query.dateFrom && req.query.dateTo && req.query.maxPersons) {
         accommodations = await AccommodationService.searchAccommodations(
             req.query.search,
-            req.query.dateFrom,
-            req.query.dateTo,
+            new Date(req.query.dateFrom),
+            new Date(req.query.dateTo),
             req.query.maxPersons);
     } else {
         accommodations = await AccommodationService.getAccommodations();
