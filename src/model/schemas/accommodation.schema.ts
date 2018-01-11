@@ -18,6 +18,11 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
+
+    /**
+     * The id of the user that created this accommodation
+     */
+    userId: Schema.Types.ObjectId;
 }
 
 export const AccommodationSchema: Schema = new Schema({
@@ -49,7 +54,11 @@ export const AccommodationSchema: Schema = new Schema({
     servicesText: String,
     pricesText: String,
     rulesText: String,
-    cancellationText: String
+    cancellationText: String,
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
+    }
 });
 
 // Add id prop to the json and remove _id and __v from the json when sending the json
