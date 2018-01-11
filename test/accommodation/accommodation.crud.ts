@@ -99,14 +99,14 @@ describe('Accommodation', () => {
 
         it('Can search for an accommodation', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations')
-            .query({
-                search: 'Barcelona',
-                dateFrom: '2017-03-01',
-                dateTo: '2017-03-07',
-                persons: 2
-            })
-            .expect(200);
+                .get('/api/v1/accommodations')
+                .query({
+                    search: 'Barcelona',
+                    dateFrom: '2017-03-01',
+                    dateTo: '2017-03-07',
+                    persons: 2
+                })
+                .expect(200);
 
             const accommodations = response.body;
 
@@ -117,14 +117,14 @@ describe('Accommodation', () => {
 
         it('Tries to search for accommodations in a location without results', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations')
-            .query({
-                search: 'Neptune',
-                dateFrom: '2017-03-01',
-                dateTo: '2017-03-07',
-                persons: 2
-            })
-            .expect(200);
+                .get('/api/v1/accommodations')
+                .query({
+                    search: 'Neptune',
+                    dateFrom: '2017-03-01',
+                    dateTo: '2017-03-07',
+                    persons: 2
+                })
+                .expect(200);
 
             const accommodations = response.body;
 
@@ -133,18 +133,24 @@ describe('Accommodation', () => {
 
         it('Tries to search for accommodations that are already taken', mochaAsync(async () => {
             const response = await request(app)
-            .get('/api/v1/accommodations')
-            .query({
-                search: 'Barcelona',
-                dateFrom: '2017-02-01',
-                dateTo: '2017-02-10',
-                persons: 2
-            })
-            .expect(200);
+                .get('/api/v1/accommodations')
+                .query({
+                    search: 'Barcelona',
+                    dateFrom: '2017-02-01',
+                    dateTo: '2017-02-10',
+                    persons: 2
+                })
+                .expect(200);
 
             const accommodations = response.body;
 
             assert(accommodations.length === 0);
+        }));
+
+        it('Can\'t get an accommodation by an unexisting id', mochaAsync(async () => {
+            const response = await request(app)
+                .get('/api/v1/accommodations/5a55e64a6bcbbb0d306f1cf0')
+                .expect(404);
         }));
 
         it('Can delete an accommodation by id', mochaAsync(async () => {
