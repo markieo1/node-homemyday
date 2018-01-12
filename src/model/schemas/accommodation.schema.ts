@@ -1,5 +1,4 @@
 import { Document, Schema } from 'mongoose';
-import { AccommodationApprove, IAccommodationApproveModel } from '../accommodation.approve.model';
 
 export enum ApproveStatus {
     Awaiting = 'Awaiting',
@@ -25,7 +24,7 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
-    approveStatus: IAccommodationApproveModel;
+    approveStatus: ApproveStatus;
     /**
      * The id of the user that created this accommodation
      */
