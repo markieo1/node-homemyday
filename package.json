@@ -10,7 +10,6 @@
     "start.prod": "node dist/index.js",
     "test": "cross-env NODE_ENV=test mocha --exit --require ts-node/register --recursive ./test/**/*.ts",
     "tsc": "tsc",
-    "postinstall": "npm run tsc",
     "lint": "eclint check * && tslint --config \"tslint.json\" --project \"tsconfig.json\""
   },
   "keywords": [],
