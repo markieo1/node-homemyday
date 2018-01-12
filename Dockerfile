@@ -1,6 +1,7 @@
 FROM node:8-alpine
 
 ENV NODE_ENV production
+ENV MONGODB_URI mongodb://mongo:27017/homemyday
 
 WORKDIR /server
 
