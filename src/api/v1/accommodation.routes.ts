@@ -3,11 +3,11 @@ import express = require('express');
 import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
-import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
-import { authenticationMiddleware } from '../middleware/index';
+import { adminMiddleware, authenticationMiddleware } from '../middleware/index';
 
 const routes = express.Router();
 
@@ -28,7 +28,7 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
-routes.get('/awaiting', authenticationMiddleware, expressAsync(async (req, res, next) => {
+routes.get('/awaiting', adminMiddleware, expressAsync(async (req, res, next) => {
 
     const accommodations = await AccommodationService.getAwaitingAccommodations();
     res.json(accommodations);
@@ -88,6 +88,24 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     const accommodation = await AccommodationService.addAccommodation(newAccomodation);
 
     res.status(201).send(accommodation);
+}));
+
+routes.post('/:id/approvalstatus', adminMiddleware, expressAsync(async (req, res, next) => {
+
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    accommodation.approveStatus = req.body.status;
+    await accommodation.save();
+
+    res.status(200).json(accommodation);
 }));
 
 routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
