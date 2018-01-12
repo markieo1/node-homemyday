@@ -28,6 +28,13 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
+routes.get('/awaiting', authenticationMiddleware, expressAsync(async (req, res, next) => {
+
+    const accommodations = await AccommodationService.getAwaitingAccommodations();
+    res.json(accommodations);
+
+}));
+
 routes.get('/me', authenticationMiddleware, expressAsync(async (req, res, next) => {
     // Get the user id
     const userId = req.authenticatedUser.id;
@@ -69,7 +76,6 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         longitude: reqBody.longitude,
         rooms: reqBody.rooms,
         beds: reqBody.beds,
-        recommended: reqBody.recommended,
         price: reqBody.price,
         spaceText: reqBody.spaceText,
         servicesText: reqBody.servicesText,

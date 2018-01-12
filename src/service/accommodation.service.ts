@@ -1,5 +1,5 @@
 import { Accommodation, IAccommodationModel } from '../model/accommodation.model';
-import { IAccommodationDocument } from '../model/schemas/accommodation.schema';
+import { ApproveStatus, IAccommodationDocument } from '../model/schemas/accommodation.schema';
 
 export class AccommodationService {
 
@@ -9,6 +9,14 @@ export class AccommodationService {
      */
     public static async getAccommodations() {
         return await Accommodation.find({});
+    }
+
+    /**
+     * Gets a list of awaiting accommodations
+     * @returns All awaiting accommodations from the Mongo database.
+     */
+    public static async getAwaitingAccommodations() {
+        return await Accommodation.find({'approveStatus.status': ApproveStatus.Awaiting});
     }
 
     /**
