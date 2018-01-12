@@ -7,6 +7,7 @@ WORKDIR /server
 
 COPY . /server
 RUN npm install
+RUN npm rebuild bcrypt --build-from-source
 RUN npm run tsc
 
 EXPOSE 3000
