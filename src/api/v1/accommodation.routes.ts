@@ -1,7 +1,7 @@
 import express = require('express');
+import multer = require('multer');
 
 import { CastError } from 'mongoose';
-import * as multer from 'multer';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
@@ -13,22 +13,15 @@ import { authenticationMiddleware } from '../middleware/index';
 const routes = express.Router();
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './uploads/');
+    destination:  (req, file, cb) => {
+        cb(null, '/tmp/my-uploads')
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname);
+        cb(null, file.fieldname + '-' + Date.now());
     }
 });
 
-const upload = storage({
-    fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            return cb(new ApiError(400, 'Invalid image type!'), false);
-        }
-        cb(null, true);
-    }
-}).single('image');
+const upload = multer({ storage });
 
 routes.get('/', expressAsync(async (req, res, next) => {
 
@@ -78,19 +71,11 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
     res.json(accommodation);
 }));
 
-routes.post('/', authenticationMiddleware, upload, expressAsync(async (req, res, next) => {
+routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) => {
     // Get the user id
     const userId = req.authenticatedUser._id;
 
     const reqBody = req.body;
-
-    upload(req, res, (err) => {
-        if (err) {
-            // An error occurred when uploading
-            throw new ApiError(400, 'Error uploading image!');
-        }
-        // Everything went fine
-    });
 
     const newAccomodation = {
         name: reqBody.name,
@@ -135,6 +120,29 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
     }
 
     res.json(accommodation);
+}));
+
+routes.post('/:id/images', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid images!');
+    }
+
+    console.log(req.body, 'Body');
+    // console.log(req.file);
+    res.end();
+
+    // let accommodation;
+
+    // try {
+    //     accommodation = await AccommodationService.updateAccommodation(req.params.id, req.body);
+    // } catch (err) {
+    //     if (err instanceof CastError as any) {
+    //         throw new ApiError(400, err.path + ' must be of type ' + err.kind);
+    //     } else {
+    //         throw err;
+    //     }
+    // }
+    // res.json();
 }));
 
 routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
