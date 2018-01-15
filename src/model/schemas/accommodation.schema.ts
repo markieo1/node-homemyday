@@ -29,6 +29,11 @@ export interface IAccommodationDocument extends Document {
      * The id of the user that created this accommodation
      */
     userId: Schema.Types.ObjectId;
+
+    /**
+     * The images of this accommodation. Contains the relative URLs to them.
+     */
+    images: string[];
 }
 
 export const AccommodationSchema: Schema = new Schema({
@@ -73,7 +78,8 @@ export const AccommodationSchema: Schema = new Schema({
         bookingId: Number,
         dateFrom: Date,
         dateTo: Date
-    }]
+    }],
+    images: [String]
 });
 
 // Store prices as cents to prevent floating point errors
