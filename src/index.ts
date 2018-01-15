@@ -36,7 +36,7 @@ app.use((req, res, next) => {
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Cache-Control,X-Requested-With,content-type, Authorization');
 
     if ('OPTIONS' === req.method) {
         res.sendStatus(200);
