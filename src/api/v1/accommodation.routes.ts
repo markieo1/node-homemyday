@@ -1,6 +1,7 @@
 import express = require('express');
 
 import { CastError } from 'mongoose';
+import * as multer from 'multer';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { IAccommodationDocument } from '../../model/schemas/accommodation.schema';
@@ -10,6 +11,24 @@ import { ValidationHelper } from '../../utils/validationhelper';
 import { authenticationMiddleware } from '../middleware/index';
 
 const routes = express.Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname);
+    }
+});
+
+const upload = storage({
+    fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new ApiError(400, 'Invalid image type!'), false);
+        }
+        cb(null, true);
+    }
+}).single('image');
 
 routes.get('/', expressAsync(async (req, res, next) => {
 
@@ -59,11 +78,19 @@ routes.get('/:id', expressAsync(async (req, res, next) => {
     res.json(accommodation);
 }));
 
-routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) => {
+routes.post('/', authenticationMiddleware, upload, expressAsync(async (req, res, next) => {
     // Get the user id
     const userId = req.authenticatedUser._id;
 
     const reqBody = req.body;
+
+    upload(req, res, (err) => {
+        if (err) {
+            // An error occurred when uploading
+            throw new ApiError(400, 'Error uploading image!');
+        }
+        // Everything went fine
+    });
 
     const newAccomodation = {
         name: reqBody.name,
