@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import * as request from 'supertest';
 import { Accommodation } from '../../src/model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../src/model/schemas/accommodation.schema';
+import { UserRoles } from '../../src/model/schemas/user.schema';
 import { User } from '../../src/model/user.model';
 import { AccommodationService } from '../../src/service/accommodation.service';
 import { mochaAsync } from '../test.helper';
@@ -13,7 +14,12 @@ describe('Accommodation', () => {
     let userToken: string;
     let createdUserId: string;
 
+    let adminUserToken: string;
+    let adminCreatedUserId: string;
+
     before(mochaAsync(async () => {
+
+        // Get regular user token
         const user = new User({
             email: 'test@test.com',
             password: 'Test Password'
@@ -23,7 +29,7 @@ describe('Accommodation', () => {
 
         createdUserId = user.id;
 
-        const response = await request(app).post('/api/v1/authentication/login').send({
+        let response = await request(app).post('/api/v1/authentication/login').send({
             email: 'test@test.com',
             password: 'Test Password',
         }).expect(200);
@@ -31,11 +37,30 @@ describe('Accommodation', () => {
         const { token } = response.body;
 
         userToken = token;
+
+        // Get admin user token
+        const admin = new User({
+            email: 'admin@test.com',
+            password: 'admin',
+            role: UserRoles.Administrator
+        });
+
+        await admin.save();
+
+        adminCreatedUserId = admin.id;
+
+        response = await request(app).post('/api/v1/authentication/login').send({
+            email: 'admin@test.com',
+            password: 'admin',
+        }).expect(200);
+
+        adminUserToken = response.body.token;
     }));
 
     describe('Create Read Update Delete', () => {
 
         let accommodationId;
+        let awaitingAccommodationId;
 
         beforeEach(mochaAsync(async () => {
             // Create accomodation
@@ -49,12 +74,30 @@ describe('Accommodation', () => {
                     bookingId: 1,
                     dateFrom: new Date('2017-02-01'),
                     dateTo: new Date('2017-02-07')
-                }]
+                }],
+                approveStatus: ApproveStatus.Approved
+            });
+
+            // Create an awaiting accommodation
+            const awaitingAccommodation = new Accommodation({
+                name: 'Test Accommodation Awaiting',
+                maxPersons: 4,
+                price: 350,
+                location: 'Athens',
+                userId: createdUserId,
+                bookings: [{
+                    bookingId: 1,
+                    dateFrom: new Date('2017-02-01'),
+                    dateTo: new Date('2017-02-07')
+                }],
+                approveStatus: ApproveStatus.Awaiting
             });
 
             await accommodation.save();
+            await awaitingAccommodation.save();
 
             accommodationId = accommodation._id;
+            awaitingAccommodationId = awaitingAccommodation._id;
         }));
 
         it('Can\'t make an request to the Accommodations without being authenticated', mochaAsync(async () => {
@@ -76,32 +119,64 @@ describe('Accommodation', () => {
         }));
 
         it('Can get all awaiting accommodations', mochaAsync(async () => {
-            // Create accomodation
-            await new Accommodation({
-                name: 'Test Accommodation 1',
-                maxPersons: 4,
-                price: 350,
-                userId: createdUserId,
-                approveStatus: {status: 'Awaiting'}
-            }).save();
-
-            await new Accommodation({
-                name: 'Test Accommodation 1',
-                maxPersons: 4,
-                price: 350,
-                userId: createdUserId,
-                approveStatus: {status: 'Approved'}
-            }).save();
 
             const response = await request(app)
                 .get('/api/v1/accommodations/awaiting')
-                .set('Authorization', `Bearer ${userToken}`)
+                .set('Authorization', `Bearer ${adminUserToken}`)
                 .expect(200);
 
             const accommodations = response.body;
             const count = await Accommodation.count({'approveStatus.status': ApproveStatus.Awaiting});
             assert(accommodations !== null);
             assert(accommodations.length === count);
+        }));
+
+        it('Can approve an accommodation', mochaAsync(async () => {
+
+            const response = await request(app)
+                .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send({status: ApproveStatus.Approved})
+                .expect(200);
+
+            const accommodation = response.body;
+
+            assert(accommodation !== null);
+            assert(accommodation.approveStatus = ApproveStatus.Approved);
+        }));
+
+        it('Can reject an accommodation', mochaAsync(async () => {
+
+            const response = await request(app)
+                .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send({status: ApproveStatus.Rejected})
+                .expect(200);
+
+            const accommodation = response.body;
+
+            assert(accommodation !== null);
+            assert(accommodation.approveStatus = ApproveStatus.Rejected);
+        }));
+
+        it('Tries to approve an accommodation without being admin', mochaAsync(async () => {
+            const response = await request(app)
+            .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send({status: ApproveStatus.Approved})
+            .expect(401);
+
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
+        it('Returns a 401 getting awaiting accommodations without being admin', mochaAsync(async () => {
+            const response = await request(app)
+                .get('/api/v1/accommodations/awaiting')
+                .set('Authorization', `Bearer ${userToken}`)
+                .expect(401);
         }));
 
         it('Can get an accommodation by id', mochaAsync(async () => {
