@@ -29,7 +29,7 @@ routes.get('/', expressAsync(async (req, res, next) => {
     res.json(accommodations);
 }));
 
-routes.get('/awaiting', adminMiddleware, expressAsync(async (req, res, next) => {
+routes.get('/awaiting', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
 
     const accommodations = await AccommodationService.getAwaitingAccommodations();
     res.json(accommodations);
@@ -100,7 +100,7 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     res.status(201).send(accommodation);
 }));
 
-routes.post('/:id/approvalstatus', adminMiddleware, expressAsync(async (req, res, next) => {
+routes.post('/:id/approvalstatus', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
 
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
