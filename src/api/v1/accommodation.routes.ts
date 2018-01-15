@@ -1,5 +1,4 @@
 import express = require('express');
-import multer = require('multer');
 
 import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
@@ -8,21 +7,11 @@ import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accom
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
+import { upload } from '../../utils/multer';
 import { ValidationHelper } from '../../utils/validationhelper';
 import { adminMiddleware, authenticationMiddleware } from '../middleware/index';
 
 const routes = express.Router();
-
-const storage = multer.diskStorage({
-    destination:  (req, file, cb) => {
-        cb(null, '/tmp/my-uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now());
-    }
-});
-
-const upload = multer({ storage });
 
 routes.get('/', expressAsync(async (req, res, next) => {
 
@@ -153,27 +142,26 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
     res.json(accommodation);
 }));
 
-routes.post('/:id/images', authenticationMiddleware, expressAsync(async (req, res, next) => {
+routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
-        throw new ApiError(400, 'Invalid images!');
+        throw new ApiError(400, 'Invalid ID!');
     }
 
-    console.log(req.body, 'Body');
-    // console.log(req.file);
+    if (!req.file) {
+        throw new ApiError(404, 'file not found');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    accommodation.images.push(req.file.path);
+    accommodation.save();
+
     res.end();
 
-    // let accommodation;
-
-    // try {
-    //     accommodation = await AccommodationService.updateAccommodation(req.params.id, req.body);
-    // } catch (err) {
-    //     if (err instanceof CastError as any) {
-    //         throw new ApiError(400, err.path + ' must be of type ' + err.kind);
-    //     } else {
-    //         throw err;
-    //     }
-    // }
-    // res.json();
 }));
 
 routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
