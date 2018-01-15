@@ -4,6 +4,7 @@ import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
 import { ValidationHelper } from '../../utils/validationhelper';
@@ -65,6 +66,14 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
 
     const reqBody = req.body;
 
+    // Approve status should be awaiting, unless the creator is an admin.
+    let approveStatus;
+    if (req.authenticatedUser.role === UserRoles.Administrator) {
+        approveStatus = ApproveStatus.Approved;
+    } else {
+        approveStatus = ApproveStatus.Awaiting;
+    }
+
     const newAccomodation = {
         name: reqBody.name,
         description: reqBody.description,
@@ -82,6 +91,7 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
         cancellationText: reqBody.cancellationText,
+        approveStatus,
         userId
     } as IAccommodationDocument;
 
@@ -112,6 +122,9 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
+
+    // Regular users should not be able to recommend accommodations
+    delete req.body.recommended;
 
     let accommodation;
 

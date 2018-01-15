@@ -145,6 +145,33 @@ describe('Accommodation', () => {
             assert(accommodation.approveStatus = ApproveStatus.Approved);
         }));
 
+        it('Can reject an accommodation', mochaAsync(async () => {
+
+            const response = await request(app)
+                .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send({status: ApproveStatus.Rejected})
+                .expect(200);
+
+            const accommodation = response.body;
+
+            assert(accommodation !== null);
+            assert(accommodation.approveStatus = ApproveStatus.Rejected);
+        }));
+
+        it('Tries to approve an accommodation without being admin', mochaAsync(async () => {
+            const response = await request(app)
+            .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+            .set('Authorization', `Bearer ${userToken}`)
+            .send({status: ApproveStatus.Approved})
+            .expect(401);
+
+            const err = response.body;
+
+            assert(err !== null);
+            assert(err.errors.length > 0);
+        }));
+
         it('Returns a 401 getting awaiting accommodations without being admin', mochaAsync(async () => {
             const response = await request(app)
                 .get('/api/v1/accommodations/awaiting')
