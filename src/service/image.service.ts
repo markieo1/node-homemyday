@@ -19,4 +19,20 @@ export class ImageService {
         accommodation.images.push(image);
         await accommodation.save();
     }
+
+    /**
+     * Deletes an image from an accommodation
+     * @param accommodationId The accommodation id to delete the image for
+     * @param filename The filename to delete
+     */
+    public static async deleteImage(accommodationId: string, filename: string) {
+        const accommodation = await AccommodationService.getAccommodation(accommodationId);
+
+        accommodation.images.splice(accommodation.images.findIndex((image) => image.filename === filename), 1);
+
+        await accommodation.save();
+
+        // Now remove the file
+    }
+
 }

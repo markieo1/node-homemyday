@@ -176,13 +176,7 @@ routes.delete('/:id/images/:imageUuid', authenticationMiddleware, expressAsync(a
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    accommodation.images.splice(accommodation.images.findIndex((image) => image.uuid === req.params.imageUuid), 1);
-    accommodation.save();
-
-    var fs = require('fs');
-    var filePath = 'c:/book/discovery.docx';
-    fs.unlinkSync(filePath);
-
+    await ImageService.deleteImage(accommodation.id, req.params.imageUuid);
 
     res.sendStatus(204);
 }));
