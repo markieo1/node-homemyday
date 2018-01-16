@@ -8,6 +8,7 @@ import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accom
 import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
+import { ImageService } from '../../service/image.service';
 import { expressAsync } from '../../utils/express.async';
 import { upload } from '../../utils/multer';
 import { ValidationHelper } from '../../utils/validationhelper';
@@ -159,18 +160,12 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    const image = {
-        uuid: req.file.filename,
-        title: req.body.title
-    } as IImageDocument;
-
-    accommodation.images.push(image);
-    await accommodation.save();
+    await ImageService.addImage(accommodation.id, req.file, req.body.title);
 
     res.sendStatus(200);
 }));
 
-routes.delete('/:id/images/:imageId', authenticationMiddleware, expressAsync(async (req, res, next) => {
+routes.delete('/:id/images/:imageUuid', authenticationMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
@@ -181,12 +176,15 @@ routes.delete('/:id/images/:imageId', authenticationMiddleware, expressAsync(asy
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    // ToDo: change req.body to something else
-    // accommodation.images.id(req.params.imageId).remove();
+    accommodation.images.splice(accommodation.images.findIndex((image) => image.uuid === req.params.imageUuid), 1);
     accommodation.save();
 
-    res.end(204);
+    var fs = require('fs');
+    var filePath = 'c:/book/discovery.docx';
+    fs.unlinkSync(filePath);
 
+
+    res.sendStatus(204);
 }));
 
 routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
