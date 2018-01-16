@@ -19,9 +19,7 @@ if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(Config.mongoDbUri,
         { useMongoClient: true })
         .then(() => {
-            if (mongoose.connection.readyState === 2) {
-                this.SeedService.seed();
-            }
+            SeedService.seed();
         });
     mongoose.connection.on('error', (error) => {
         console.error('MongoDB connection error. Please make sure MongoDB is running.', error);
