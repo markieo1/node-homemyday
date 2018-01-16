@@ -100,7 +100,7 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     res.status(201).send(accommodation);
 }));
 
-routes.post('/:id/approvalstatus', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
+routes.put('/:id/approve', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
@@ -111,7 +111,9 @@ routes.post('/:id/approvalstatus', authenticationMiddleware, adminMiddleware, ex
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    accommodation.approveStatus = req.body.status;
+    accommodation.approveStatus.status = req.body.accommodation.approveStatus.status;
+    accommodation.approveStatus.reason = req.body.accommodation.approveStatus.reason;
+
     await accommodation.save();
 
     res.status(200).json(accommodation);
@@ -124,6 +126,7 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
 
     // Regular users should not be able to recommend accommodations
     delete req.body.recommended;
+    delete req.body.approveStatus;
 
     let accommodation;
 
