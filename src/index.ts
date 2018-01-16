@@ -7,6 +7,7 @@ import * as logger from 'morgan';
 import * as apiRoutes from './api';
 import { Config } from './config/config.const';
 import { ApiError, AuthenticationError } from './errors';
+import { SeedService } from './service/seed.service';
 
 const port = Config.port;
 const app = express();
@@ -16,7 +17,10 @@ mongoose.Promise = global.Promise;
 if (process.env.NODE_ENV !== 'test') {
     // Connect to MongoDB.
     mongoose.connect(Config.mongoDbUri,
-        { useMongoClient: true });
+        { useMongoClient: true })
+        .then(() => {
+            SeedService.seed();
+        });
     mongoose.connection.on('error', (error) => {
         console.error('MongoDB connection error. Please make sure MongoDB is running.', error);
         process.exit(1);
