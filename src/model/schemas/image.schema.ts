@@ -4,6 +4,7 @@ export interface IImageDocument extends Document {
     uuid: string;
     filename: string;
     title: string;
+    fileSize: number;
 }
 
 export const ImageSchema: Schema = new Schema({
@@ -14,6 +15,9 @@ export const ImageSchema: Schema = new Schema({
     filename: {
         type: String,
         required: true
+    },
+    fileSize: {
+        type: Number
     },
     title: {
         type: String

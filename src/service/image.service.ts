@@ -26,6 +26,7 @@ export class ImageService {
         const image = {
             uuid,
             filename: file.filename,
+            fileSize: file.size,
             title
         } as IImageDocument;
 
