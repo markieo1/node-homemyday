@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as util from 'util';
+import { Config } from '../config/config.const';
 import { IImageDocument } from '../model/schemas/image.schema';
 import { AccommodationService } from './accommodation.service';
-import { Config } from '../config/config.const';
 
 export class ImageService {
     /**
