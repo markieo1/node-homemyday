@@ -105,16 +105,13 @@ routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAs
         throw new ApiError(400, 'Invalid ID!');
     }
 
-    console.log(req.params.approveId);
-
     const accommodation = await AccommodationService.getAccommodation(req.params.id);
 
     if (!accommodation) {
         throw new ApiError(404, 'Accommodation not found');
     }
-
-    accommodation.approveStatus.status = req.body.accommodation.approveStatus.status;
-    accommodation.approveStatus.reason = req.body.accommodation.approveStatus.reason;
+    accommodation.approveStatus.status = req.body.approveStatus.status;
+    accommodation.approveStatus.reason = req.body.approveStatus.reason;
 
     await accommodation.save();
 
@@ -128,7 +125,6 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
 
     // Regular users should not be able to recommend accommodations
     delete req.body.recommended;
-    delete req.body.approveStatus;
 
     let accommodation;
 
