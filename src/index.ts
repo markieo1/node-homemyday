@@ -25,7 +25,9 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Seed Administrator user login
-SeedService.seed();
+if (mongoose.connection.readyState === 2) {
+    SeedService.seed();
+}
 
 app.use(helmet());
 
