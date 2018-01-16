@@ -162,9 +162,12 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    await ImageService.addImage(accommodation.id, req.file, req.body.title);
+    const newImage = await ImageService.addImage(accommodation.id, req.file, req.body.title);
+    const newUuid = {
+        uuid: newImage.uuid
+    }
 
-    res.status(200).json(req.file.filename);
+    res.status(200).json(newUuid);
 }));
 
 routes.delete('/:id/images/:imageUuid', authenticationMiddleware, expressAsync(async (req, res, next) => {
