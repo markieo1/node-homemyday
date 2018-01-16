@@ -126,7 +126,7 @@ describe('Accommodation', () => {
                 .expect(200);
 
             const accommodations = response.body;
-            const count = await Accommodation.count({'approveStatus.status': ApproveStatus.Awaiting});
+            const count = await Accommodation.count({approveStatus: ApproveStatus.Awaiting});
             assert(accommodations !== null);
             assert(accommodations.length === count);
         }));
