@@ -1,12 +1,12 @@
 import { Document, Schema } from 'mongoose';
 
 export interface IImageDocument extends Document {
-    uuid: string;
+    filename: string;
     title: string;
 }
 
 export const ImageSchema: Schema = new Schema({
-    uuid: {
+    filename: {
         type: String,
         required: true,
         unique: true
