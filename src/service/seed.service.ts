@@ -11,7 +11,7 @@ export class SeedService {
         const password = 'HomeMyDay@123';
         const role =  UserRoles.Administrator;
 
-        const count = await User.count({ email });
+        const count = await User.count({ role });
         if (count === 0) {
             const user = new User({
                 email,
@@ -19,7 +19,7 @@ export class SeedService {
                 role
             });
 
-            user.save();
+            await user.save();
         }
     }
 }
