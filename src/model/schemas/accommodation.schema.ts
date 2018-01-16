@@ -80,7 +80,7 @@ export const AccommodationSchema: Schema = new Schema({
         dateFrom: Date,
         dateTo: Date
     }],
-    images: [String]
+    images: [ImageSchema]
 });
 
 // Store prices as cents to prevent floating point errors

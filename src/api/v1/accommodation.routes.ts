@@ -4,7 +4,6 @@ import { CastError } from 'mongoose';
 import { v4 as uuid } from 'uuid';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
-import { IImageModel } from '../../model/image.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
 import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
@@ -160,19 +159,15 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    const newId = uuid();
-
     const image = {
         uuid: req.file.filename,
         title: req.body.title
     } as IImageDocument;
 
     accommodation.images.push(image);
+    await accommodation.save();
 
-    accommodation.save();
-
-    res.end();
-
+    res.sendStatus(200);
 }));
 
 routes.delete('/:id/images/:imageId', authenticationMiddleware, expressAsync(async (req, res, next) => {
