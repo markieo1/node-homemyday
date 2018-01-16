@@ -7,6 +7,7 @@ import * as logger from 'morgan';
 import * as apiRoutes from './api';
 import { Config } from './config/config.const';
 import { ApiError, AuthenticationError } from './errors';
+import { SeedService } from './service/seed.service';
 
 const port = Config.port;
 const app = express();
@@ -22,6 +23,9 @@ if (process.env.NODE_ENV !== 'test') {
         process.exit(1);
     });
 }
+
+// Seed Administrator user login
+SeedService.seed();
 
 app.use(helmet());
 
