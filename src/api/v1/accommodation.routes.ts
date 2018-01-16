@@ -161,7 +161,9 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
     }
 
     const newImage = await ImageService.addImage(accommodation.id, req.file, req.body.title);
-    const newUuid = newImage.uuid;
+    const newUuid = {
+        uuid: newImage.uuid
+    }
 
     res.status(200).json(newUuid);
 }));
