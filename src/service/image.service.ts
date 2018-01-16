@@ -1,7 +1,15 @@
+import * as fs from 'fs';
+import * as util from 'util';
 import { IImageDocument } from '../model/schemas/image.schema';
 import { AccommodationService } from './accommodation.service';
+import { Config } from '../config/config.const';
 
 export class ImageService {
+    /**
+     * Promised version of fs.unlink
+     */
+    public static unlinkFile = util.promisify(fs.unlink);
+
     /**
      * Adds an image to the accommodation
      * @param accommodationId The accommodation id to add the image to
@@ -33,6 +41,6 @@ export class ImageService {
         await accommodation.save();
 
         // Now remove the file
+        await ImageService.unlinkFile(`${Config.imagePath}/${filename}`);
     }
-
 }
