@@ -16,7 +16,7 @@ export class AccommodationService {
      * @returns All awaiting accommodations from the Mongo database.
      */
     public static async getAwaitingAccommodations() {
-        return await Accommodation.find({'approveStatus.status': ApproveStatus.Awaiting});
+        return await Accommodation.find({approveStatus: ApproveStatus.Awaiting});
     }
 
     /**
