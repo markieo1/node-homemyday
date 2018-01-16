@@ -31,6 +31,7 @@ export class ImageService {
 
         accommodation.images.push(image);
         await accommodation.save();
+        return image;
     }
 
     /**
