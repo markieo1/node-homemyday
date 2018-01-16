@@ -17,16 +17,16 @@ mongoose.Promise = global.Promise;
 if (process.env.NODE_ENV !== 'test') {
     // Connect to MongoDB.
     mongoose.connect(Config.mongoDbUri,
-        { useMongoClient: true });
+        { useMongoClient: true })
+        .then(() => {
+            if (mongoose.connection.readyState === 2) {
+                this.SeedService.seed();
+            }
+        });
     mongoose.connection.on('error', (error) => {
         console.error('MongoDB connection error. Please make sure MongoDB is running.', error);
         process.exit(1);
     });
-}
-
-// Seed Administrator user login
-if (mongoose.connection.readyState === 2) {
-    SeedService.seed();
 }
 
 app.use(helmet());

@@ -19,7 +19,12 @@ export class SeedService {
                 role
             });
 
-            await user.save();
+            const savedUser = await user.save();
+            if (savedUser) {
+                return true;
+            } else {
+                console.log('An error has been occurred while saving the administrator user login.');
+            }
         }
     }
 }
