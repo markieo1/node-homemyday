@@ -100,10 +100,12 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     res.status(201).send(accommodation);
 }));
 
-routes.put('/:id/approve', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
+routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
+
+    console.log(req.params.approveId);
 
     const accommodation = await AccommodationService.getAccommodation(req.params.id);
 
