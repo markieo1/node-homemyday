@@ -23,4 +23,9 @@ export interface IConfig {
      * How many seconds a JWT token is valid
      */
     expirationSeconds: number;
+
+    /**
+     * The default image path for accommodations
+     */
+    imagePath: string;
 }
