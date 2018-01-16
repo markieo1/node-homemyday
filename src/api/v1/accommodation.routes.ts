@@ -164,6 +164,26 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
 
 }));
 
+routes.delete('/:id/images', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    // ToDo: change req.body to something else
+    const index = accommodation.images.indexOf(req.body.imageId);
+    accommodation.images.splice(index, 1);
+    accommodation.save();
+
+    res.end();
+
+}));
+
 routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid id supplied!');
