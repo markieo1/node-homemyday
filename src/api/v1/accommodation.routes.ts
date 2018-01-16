@@ -129,6 +129,8 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
 
     // Regular users should not be able to recommend accommodations
     delete req.body.recommended;
+    delete req.body.images;
+
 
     let accommodation;
 
@@ -162,7 +164,7 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
 
     await ImageService.addImage(accommodation.id, req.file, req.body.title);
 
-    res.sendStatus(200);
+    res.status(200).json(req.file.filename);
 }));
 
 routes.delete('/:id/images/:imageUuid', authenticationMiddleware, expressAsync(async (req, res, next) => {
