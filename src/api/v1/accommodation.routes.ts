@@ -101,7 +101,6 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
 }));
 
 routes.post('/:id/approvalstatus', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
-
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
