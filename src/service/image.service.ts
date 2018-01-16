@@ -1,6 +1,8 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as util from 'util';
 import { Config } from '../config/config.const';
+import { ImageError } from '../errors/index';
 import { IImageDocument } from '../model/schemas/image.schema';
 import { AccommodationService } from './accommodation.service';
 
@@ -19,7 +21,10 @@ export class ImageService {
     public static async addImage(accommodationId: string, file: Express.Multer.File, title: string) {
         const accommodation = await AccommodationService.getAccommodation(accommodationId);
 
+        const uuid = file.filename.replace(path.extname(file.filename), '');
+
         const image = {
+            uuid,
             filename: file.filename,
             title
         } as IImageDocument;
@@ -31,16 +36,21 @@ export class ImageService {
     /**
      * Deletes an image from an accommodation
      * @param accommodationId The accommodation id to delete the image for
-     * @param filename The filename to delete
+     * @param filename The uuid to delete
      */
-    public static async deleteImage(accommodationId: string, filename: string) {
+    public static async deleteImage(accommodationId: string, uuid: string) {
         const accommodation = await AccommodationService.getAccommodation(accommodationId);
 
-        accommodation.images.splice(accommodation.images.findIndex((image) => image.filename === filename), 1);
+        const image = accommodation.images.find((i) => i.uuid === uuid);
+        if (!image) {
+            throw new ImageError('Image not found!');
+        }
+
+        accommodation.images.splice(accommodation.images.indexOf(image), 1);
 
         await accommodation.save();
 
         // Now remove the file
-        await ImageService.unlinkFile(`${Config.imagePath}/${filename}`);
+        await ImageService.unlinkFile(`${Config.imagePath}/${image.filename}`);
     }
 }

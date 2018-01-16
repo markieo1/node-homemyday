@@ -1,4 +1,5 @@
 import { ApiError } from './api.error';
 import { AuthenticationError } from './authentication.error';
+import { ImageError } from './image.error';
 
-export { ApiError, AuthenticationError };
+export { ApiError, AuthenticationError, ImageError };
