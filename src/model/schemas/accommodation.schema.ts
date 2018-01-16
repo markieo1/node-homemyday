@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { IImageDocument, ImageSchema } from './image.schema';
 
 export enum ApproveStatus {
     Awaiting = 'Awaiting',
@@ -33,7 +34,7 @@ export interface IAccommodationDocument extends Document {
     /**
      * The images of this accommodation. Contains the relative URLs to them.
      */
-    images: string[];
+    images: [IImageDocument];
 }
 
 export const AccommodationSchema: Schema = new Schema({

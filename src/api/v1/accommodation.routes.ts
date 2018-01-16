@@ -1,10 +1,12 @@
 import express = require('express');
-import uuid = require('uuid');
 
 import { CastError } from 'mongoose';
+import { v4 as uuid } from 'uuid';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
+import { IImageModel } from '../../model/image.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
@@ -160,14 +162,20 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
 
     const newId = uuid();
 
-    accommodation.images.push(req.file.path);
+    const image = {
+        uuid: req.file.filename,
+        title: req.body.title
+    } as IImageDocument;
+
+    accommodation.images.push(image);
+
     accommodation.save();
 
     res.end();
 
 }));
 
-routes.delete('/:id/images', authenticationMiddleware, expressAsync(async (req, res, next) => {
+routes.delete('/:id/images/:imageId', authenticationMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
@@ -179,11 +187,10 @@ routes.delete('/:id/images', authenticationMiddleware, expressAsync(async (req, 
     }
 
     // ToDo: change req.body to something else
-    const index = accommodation.images.indexOf(req.body.imageId);
-    accommodation.images.splice(index, 1);
+    // accommodation.images.id(req.params.imageId).remove();
     accommodation.save();
 
-    res.end();
+    res.end(204);
 
 }));
 
