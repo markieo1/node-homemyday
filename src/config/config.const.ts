@@ -8,5 +8,5 @@ export const Config: IConfig = {
     port: (process.env.PORT || config.port) as number,
     secret: process.env.JWT_KEY || config.secret,
     expirationSeconds: (process.env.JWT_EXPIRATION_SECONDS || config.expirationSeconds) as number,
-    imagePath: process.env.imagePath || config.imagePath
+    imagePath: process.env.IMAGE_PATH || config.imagePath
 };
