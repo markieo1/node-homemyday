@@ -1,4 +1,5 @@
 import express = require('express');
+import uuid = require('uuid');
 
 import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
@@ -156,6 +157,8 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
     if (!accommodation) {
         throw new ApiError(404, 'Accommodation not found');
     }
+
+    const newId = uuid();
 
     accommodation.images.push(req.file.path);
     accommodation.save();
