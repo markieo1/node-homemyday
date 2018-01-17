@@ -3,6 +3,7 @@ import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { IApproveStatusDocument } from '../../model/schemas/approvestatus.schema';
 import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
