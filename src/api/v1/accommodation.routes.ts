@@ -131,7 +131,6 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
     delete req.body.recommended;
     delete req.body.images;
 
-
     let accommodation;
 
     try {
@@ -165,7 +164,7 @@ routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expr
     const newImage = await ImageService.addImage(accommodation.id, req.file, req.body.title);
     const newUuid = {
         uuid: newImage.uuid
-    }
+    };
 
     res.status(200).json(newUuid);
 }));
