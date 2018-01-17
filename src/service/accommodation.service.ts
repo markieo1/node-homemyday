@@ -108,11 +108,13 @@ export class AccommodationService {
     public static async deleteAccommodation(id) {
         const accommodation = await this.getAccommodation(id);
 
-        // Remove all the images
-        if (accommodation.images) {
-            accommodation.images.forEach(async (image) => {
-                await ImageService.deleteImage(accommodation.id, image.uuid);
-            });
+        if (accommodation) {
+            // Remove all the images
+            if (accommodation.images) {
+                accommodation.images.forEach(async (image) => {
+                    await ImageService.deleteImage(accommodation.id, image.uuid);
+                });
+            }
         }
 
         return await Accommodation.findByIdAndRemove(id);
