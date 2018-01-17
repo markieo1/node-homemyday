@@ -36,8 +36,8 @@ export class AccommodationService {
      * @param approveStatus The approveStatus of accommodation.
      */
     public static async updateApproval(accommodation: IAccommodationDocument,
-        approveStatus: ApproveStatus,
-        approveStatusReason: string) {
+                                       approveStatus: ApproveStatus,
+                                       approveStatusReason: string) {
         const approveStatusToUpdate = {
             status: approveStatus,
             reason: approveStatusReason
