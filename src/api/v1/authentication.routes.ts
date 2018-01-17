@@ -60,11 +60,11 @@ routes.post('/register', expressAsync(async (req, res, next) => {
 
 routes.post('/changepassword', authenticationMiddleware, expressAsync(async (req, res, next) => {
 
-    const oldPassword = req.body.password;
+    const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
 
     if (!oldPassword || !newPassword ) {
-        throw new ApiError(400, 'password and newPassword are required!');
+        throw new ApiError(400, 'oldPassword and newPassword are required!');
     }
 
     // Confirm old password
