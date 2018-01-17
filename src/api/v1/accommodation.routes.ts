@@ -1,7 +1,5 @@
 import express = require('express');
-
 import { CastError } from 'mongoose';
-import { v4 as uuid } from 'uuid';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';

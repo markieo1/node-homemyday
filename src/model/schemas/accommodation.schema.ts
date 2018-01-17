@@ -32,7 +32,7 @@ export interface IAccommodationDocument extends Document {
     userId: Schema.Types.ObjectId;
 
     /**
-     * The images of this accommodation. Contains the relative URLs to them.
+     * The images of this accommodation.
      */
     images: [IImageDocument];
 }
