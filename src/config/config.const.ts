@@ -7,5 +7,6 @@ export const Config: IConfig = {
     mongoDbUri: process.env.MONGODB_URI || config.mongoDbUri,
     port: (process.env.PORT || config.port) as number,
     secret: process.env.JWT_KEY || config.secret,
-    expirationSeconds: (process.env.JWT_EXPIRATION_SECONDS || config.expirationSeconds) as number
+    expirationSeconds: (process.env.JWT_EXPIRATION_SECONDS || config.expirationSeconds) as number,
+    imagePath: process.env.IMAGE_PATH || config.imagePath
 };

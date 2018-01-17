@@ -1,12 +1,14 @@
 import express = require('express');
-
 import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
+import { ImageService } from '../../service/image.service';
 import { expressAsync } from '../../utils/express.async';
+import { upload } from '../../utils/multer';
 import { ValidationHelper } from '../../utils/validationhelper';
 import { adminMiddleware, authenticationMiddleware } from '../middleware/index';
 
@@ -124,6 +126,7 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
 
     // Regular users should not be able to recommend accommodations
     delete req.body.recommended;
+    delete req.body.images;
 
     let accommodation;
 
@@ -138,6 +141,45 @@ routes.put('/:id', authenticationMiddleware, expressAsync(async (req, res, next)
     }
 
     res.json(accommodation);
+}));
+
+routes.post('/:id/images', authenticationMiddleware, upload.single('file'), expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    if (!req.file) {
+        throw new ApiError(404, 'file not found');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    const newImage = await ImageService.addImage(accommodation.id, req.file, req.body.title);
+    const newUuid = {
+        uuid: newImage.uuid
+    };
+
+    res.status(200).json(newUuid);
+}));
+
+routes.delete('/:id/images/:imageUuid', authenticationMiddleware, expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    await ImageService.deleteImage(accommodation.id, req.params.imageUuid);
+
+    res.sendStatus(204);
 }));
 
 routes.delete('/:id', authenticationMiddleware, expressAsync(async (req, res, next) => {
