@@ -121,6 +121,14 @@ describe('Authentication', () => {
             password: 'Test Password',
             newPassword: 'Testttt',
         }).expect(204);
+
+    }));
+
+    it('Returns a 400 if tried to login with a nonexisting email', mochaAsync(async () => {
+        const response = await request(app).post('/api/v1/authentication/login').send({
+            email: 'random@random.com',
+            password: 'this is not a password',
+        }).expect(400);
     }));
 
     // Remove all users

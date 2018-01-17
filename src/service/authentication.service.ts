@@ -16,6 +16,10 @@ export class AuthenticationService {
      */
     public static async authenticateUser(email: string, password: string): Promise<IUserDocument> {
         const user = await User.findOne({ email });
+        if (!user) {
+            throw new AuthenticationError('Invalid username or password!');
+        }
+
         const result = await user.comparePassword(password);
 
         if (!result) {
