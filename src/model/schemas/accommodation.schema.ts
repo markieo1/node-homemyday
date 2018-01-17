@@ -25,7 +25,7 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
-    approveStatus: [IApproveStatusDocument];
+    approveStatus: IApproveStatusDocument;
     /**
      * The id of the user that created this accommodation
      */
@@ -62,7 +62,7 @@ export const AccommodationSchema: Schema = new Schema({
     pricesText: String,
     rulesText: String,
     cancellationText: String,
-    approveStatus: [ApproveStatusSchema],
+    approveStatus: ApproveStatusSchema,
     userId: {
         type: Schema.Types.ObjectId,
         required: true

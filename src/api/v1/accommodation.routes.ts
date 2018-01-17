@@ -4,6 +4,7 @@ import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { IApproveStatusDocument } from '../../model/schemas/approvestatus.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
 import { expressAsync } from '../../utils/express.async';
@@ -74,6 +75,11 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         approveStatus = ApproveStatus.Awaiting;
     }
 
+    const approveStatusSchema = {
+        status: approveStatus,
+        reason: ''
+    } as IApproveStatusDocument;
+
     const newAccomodation = {
         name: reqBody.name,
         description: reqBody.description,
@@ -91,7 +97,7 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
         cancellationText: reqBody.cancellationText,
-        approveStatus,
+        approveStatus: approveStatusSchema,
         userId
     } as IAccommodationDocument;
 
@@ -113,7 +119,7 @@ routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAs
 
     accommodation = await AccommodationService.updateApproval(accommodation,
                                                               req.body.approveStatus.status,
-                                                              req.body.ApproveStatus.reason);
+                                                              req.body.approveStatus.reason);
     await accommodation.save();
 
     res.status(200).json(accommodation);

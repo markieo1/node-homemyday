@@ -38,11 +38,11 @@ export class AccommodationService {
                                        approveStatus: ApproveStatus,
                                        approveStatusReason: string) {
         const approveStatusToUpdate = {
-            approveStatus,
+            status: approveStatus,
             reason: approveStatusReason
         } as IApproveStatusDocument;
 
-        accommodation.approveStatus.push(approveStatusToUpdate);
+        accommodation.approveStatus = approveStatusToUpdate;
 
         return accommodation;
     }
