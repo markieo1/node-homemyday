@@ -107,6 +107,13 @@ describe('Authentication', () => {
         assert(errors[0] === 'Token decoding failed');
     }));
 
+    it('Returns a 400 if tried to login with a nonexisting email', mochaAsync(async () => {
+        const response = await request(app).post('/api/v1/authentication/login').send({
+            email: 'random@random.com',
+            password: 'this is not a password',
+        }).expect(400);
+    }));
+
     // Remove all users
     afterEach(mochaAsync(async () => {
         await User.remove({});
