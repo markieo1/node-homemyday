@@ -1,6 +1,7 @@
 import { Accommodation, IAccommodationModel } from '../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../model/schemas/accommodation.schema';
 import { IApproveStatusDocument } from '../model/schemas/approvestatus.schema';
+import { ImageService } from './image.service';
 
 export class AccommodationService {
 
@@ -17,7 +18,7 @@ export class AccommodationService {
      * @returns All awaiting accommodations from the Mongo database.
      */
     public static async getAwaitingAccommodations() {
-        return await Accommodation.find({'approveStatus.status':  ApproveStatus.Awaiting});
+        return await Accommodation.find({ 'approveStatus.status': ApproveStatus.Awaiting });
     }
 
     /**
@@ -35,8 +36,8 @@ export class AccommodationService {
      * @param approveStatus The approveStatus of accommodation.
      */
     public static async updateApproval(accommodation: IAccommodationDocument,
-                                       approveStatus: ApproveStatus,
-                                       approveStatusReason: string) {
+        approveStatus: ApproveStatus,
+        approveStatusReason: string) {
         const approveStatusToUpdate = {
             status: approveStatus,
             reason: approveStatusReason
@@ -72,10 +73,10 @@ export class AccommodationService {
         });
     }
 
-   /**
-    * Gets the accommodations for one user
-    * @param id The id of the user
-    */
+    /**
+     * Gets the accommodations for one user
+     * @param id The id of the user
+     */
     public static async getForUser(userId: string) {
         return await Accommodation.find({
             userId
@@ -105,6 +106,15 @@ export class AccommodationService {
      * @param id The Object ID to delete.
      */
     public static async deleteAccommodation(id) {
+        const accommodation = await this.getAccommodation(id);
+
+        // Remove all the images
+        if (accommodation.images) {
+            accommodation.images.forEach(async (image) => {
+                await ImageService.deleteImage(accommodation.id, image.uuid);
+            });
+        }
+
         return await Accommodation.findByIdAndRemove(id);
     }
 }
