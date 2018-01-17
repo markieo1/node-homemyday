@@ -1,5 +1,6 @@
 import { Document, Schema } from 'mongoose';
 import { ApproveStatusSchema, IApproveStatusDocument } from './approvestatus.schema';
+import { IImageDocument, ImageSchema } from './image.schema';
 
 export enum ApproveStatus {
     Awaiting = 'Awaiting',
@@ -30,6 +31,11 @@ export interface IAccommodationDocument extends Document {
      * The id of the user that created this accommodation
      */
     userId: Schema.Types.ObjectId;
+
+    /**
+     * The images of this accommodation.
+     */
+    images: [IImageDocument];
 }
 
 export const AccommodationSchema: Schema = new Schema({
@@ -71,7 +77,8 @@ export const AccommodationSchema: Schema = new Schema({
         bookingId: Number,
         dateFrom: Date,
         dateTo: Date
-    }]
+    }],
+    images: [ImageSchema]
 });
 
 // Store prices as cents to prevent floating point errors
