@@ -66,7 +66,7 @@ export const AccommodationSchema: Schema = new Schema({
     cancellationText: String,
     approveStatus: {
         status: {
-            type: String,
+            type: ApproveStatus,
             default: ApproveStatus.Awaiting
         },
         reason: String

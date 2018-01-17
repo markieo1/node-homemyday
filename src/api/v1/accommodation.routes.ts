@@ -105,13 +105,13 @@ routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAs
         throw new ApiError(400, 'Invalid ID!');
     }
 
-    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+    let accommodation = await AccommodationService.getAccommodation(req.params.id);
 
     if (!accommodation) {
         throw new ApiError(404, 'Accommodation not found');
     }
-    accommodation.approveStatus.status = req.body.approveStatus.status;
-    accommodation.approveStatus.reason = req.body.approveStatus.reason;
+
+    accommodation = await AccommodationService.approveAccommodation(accommodation, req.body.approveStatus);
 
     await accommodation.save();
 

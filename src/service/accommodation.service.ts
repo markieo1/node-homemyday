@@ -29,6 +29,17 @@ export class AccommodationService {
     }
 
     /**
+     * Sets the status and reason of the approveStatus of accommodation
+     * @param accommodation The object of accommodation.
+     * @param approveStatus The approveStatus of accommodation.
+     */
+    public static async approveAccommodation(accommodation: IAccommodationDocument, approveStatus: any) {
+        accommodation.approveStatus.status = approveStatus.status;
+        accommodation.approveStatus.reason = approveStatus.reason;
+        return accommodation;
+    }
+
+    /**
      * Gets all accommodations that match the given search parameters.
      * Will only return accommodations that can fit the requested amount of persons.
      * Will also only return accommodations which are not already booked in the requested timeframe.
