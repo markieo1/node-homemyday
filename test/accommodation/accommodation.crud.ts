@@ -126,42 +126,46 @@ describe('Accommodation', () => {
                 .expect(200);
 
             const accommodations = response.body;
-            const count = await Accommodation.count({approveStatus: ApproveStatus.Awaiting});
+            const count = await Accommodation.count({'approveStatus.status': ApproveStatus.Awaiting});
             assert(accommodations !== null);
             assert(accommodations.length === count);
         }));
 
         it('Can approve an accommodation', mochaAsync(async () => {
+            const accommodation = await AccommodationService.getAccommodation(accommodationId);
+            accommodation.approveStatus.status = ApproveStatus.Approved;
 
             const response = await request(app)
-                .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+                .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')
                 .set('Authorization', `Bearer ${adminUserToken}`)
-                .send({status: ApproveStatus.Approved})
+                .send(accommodation)
                 .expect(200);
 
-            const accommodation = response.body;
+            const approvedAccommodation = response.body;
 
             assert(accommodation !== null);
-            assert(accommodation.approveStatus = ApproveStatus.Approved);
+            assert(approvedAccommodation.approveStatus.status = ApproveStatus.Approved);
         }));
 
         it('Can reject an accommodation', mochaAsync(async () => {
+            const accommodation = await AccommodationService.getAccommodation(accommodationId);
+            accommodation.approveStatus.status = ApproveStatus.Rejected;
 
             const response = await request(app)
-                .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+                .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')
                 .set('Authorization', `Bearer ${adminUserToken}`)
-                .send({status: ApproveStatus.Rejected})
+                .send(accommodation)
                 .expect(200);
 
-            const accommodation = response.body;
+            const rejectedAccommodation = response.body;
 
-            assert(accommodation !== null);
-            assert(accommodation.approveStatus = ApproveStatus.Rejected);
+            assert(rejectedAccommodation !== null);
+            assert(rejectedAccommodation.approveStatus.status = ApproveStatus.Rejected);
         }));
 
         it('Tries to approve an accommodation without being admin', mochaAsync(async () => {
             const response = await request(app)
-            .post('/api/v1/accommodations/' + awaitingAccommodationId + '/approvalstatus')
+            .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')
             .set('Authorization', `Bearer ${userToken}`)
             .send({status: ApproveStatus.Approved})
             .expect(401);
