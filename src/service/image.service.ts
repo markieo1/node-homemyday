@@ -53,6 +53,6 @@ export class ImageService {
         await accommodation.save();
 
         // Now remove the file
-        await ImageService.unlinkFile(`${Config.imagePath}/${image.filename}`);
+        await ImageService.unlinkFile(path.join(Config.imagePath, image.filename));
     }
 }
