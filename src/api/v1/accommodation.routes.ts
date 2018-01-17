@@ -3,6 +3,7 @@ import { CastError } from 'mongoose';
 import { ApiError } from '../../errors/index';
 import { Accommodation, IAccommodationModel } from '../../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../../model/schemas/accommodation.schema';
+import { IApproveStatusDocument } from '../../model/schemas/approvestatus.schema';
 import { IImageDocument } from '../../model/schemas/image.schema';
 import { UserRoles } from '../../model/schemas/user.schema';
 import { AccommodationService } from '../../service/accommodation.service';
@@ -76,6 +77,11 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         approveStatus = ApproveStatus.Awaiting;
     }
 
+    const approveStatusSchema = {
+        status: approveStatus,
+        reason: ''
+    } as IApproveStatusDocument;
+
     const newAccomodation = {
         name: reqBody.name,
         description: reqBody.description,
@@ -93,7 +99,7 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
         pricesText: reqBody.pricesText,
         rulesText: reqBody.rulesText,
         cancellationText: reqBody.cancellationText,
-        approveStatus,
+        approveStatus: approveStatusSchema,
         userId
     } as IAccommodationDocument;
 
@@ -102,19 +108,20 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     res.status(201).send(accommodation);
 }));
 
-routes.post('/:id/approvalstatus', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
-
+routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');
     }
 
-    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+    let accommodation = await AccommodationService.getAccommodation(req.params.id);
 
     if (!accommodation) {
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    accommodation.approveStatus = req.body.status;
+    accommodation = await AccommodationService.updateApproval(accommodation,
+                                                              req.body.approveStatus.status,
+                                                              req.body.approveStatus.reason);
     await accommodation.save();
 
     res.status(200).json(accommodation);
