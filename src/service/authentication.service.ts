@@ -26,6 +26,33 @@ export class AuthenticationService {
     }
 
     /**
+     * Registers a new user.
+     * @param email The email of the user.
+     * @param password The user's password.
+     * @returns An instance of IUserDocument, if the registration attempt was successful.
+     * @throws An instance of ValidationError, if there is something wrong with the user data.
+     */
+    public static async registerUser(email: string, password: string): Promise<IUserDocument> {
+        const user = new User({
+            email,
+            password
+        });
+
+        return await user.save();
+    }
+
+    /**
+     * Changes a user's password.
+     * @param user The user to change the password for.
+     * @param newPassword The new desired password.
+     */
+    public static async changePassword(user: IUserDocument, newPassword: string) {
+        user.password = newPassword;
+
+        return await user.save();
+    }
+
+    /**
      * Generates a token for a user.
      * @param user The user to generate a token for.
      * @returns A JWT token in string form.
