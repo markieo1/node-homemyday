@@ -111,8 +111,9 @@ routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAs
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    accommodation = await AccommodationService.approveAccommodation(accommodation, req.body.approveStatus);
-
+    accommodation = await AccommodationService.updateApproval(accommodation,
+                                                              req.body.approveStatus.status,
+                                                              req.body.ApproveStatus.reason);
     await accommodation.save();
 
     res.status(200).json(accommodation);

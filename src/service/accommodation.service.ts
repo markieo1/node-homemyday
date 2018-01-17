@@ -1,5 +1,6 @@
 import { Accommodation, IAccommodationModel } from '../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../model/schemas/accommodation.schema';
+import { IApproveStatusDocument } from '../model/schemas/approvestatus.schema';
 
 export class AccommodationService {
 
@@ -33,9 +34,16 @@ export class AccommodationService {
      * @param accommodation The object of accommodation.
      * @param approveStatus The approveStatus of accommodation.
      */
-    public static async approveAccommodation(accommodation: IAccommodationDocument, approveStatus: any) {
-        accommodation.approveStatus.status = approveStatus.status;
-        accommodation.approveStatus.reason = approveStatus.reason;
+    public static async updateApproval(accommodation: IAccommodationDocument,
+                                       approveStatus: ApproveStatus,
+                                       approveStatusReason: string) {
+        const approveStatusToUpdate = {
+            approveStatus,
+            reason: approveStatusReason
+        } as IApproveStatusDocument;
+
+        accommodation.approveStatus.push(approveStatusToUpdate);
+
         return accommodation;
     }
 

@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { ApproveStatusSchema, IApproveStatusDocument } from './approvestatus.schema';
 
 export enum ApproveStatus {
     Awaiting = 'Awaiting',
@@ -24,10 +25,7 @@ export interface IAccommodationDocument extends Document {
     pricesText: string;
     rulesText: string;
     cancellationText: string;
-    approveStatus: {
-        status: ApproveStatus;
-        reason: string;
-    };
+    approveStatus: [IApproveStatusDocument];
     /**
      * The id of the user that created this accommodation
      */
@@ -64,13 +62,7 @@ export const AccommodationSchema: Schema = new Schema({
     pricesText: String,
     rulesText: String,
     cancellationText: String,
-    approveStatus: {
-        status: {
-            type: ApproveStatus,
-            default: ApproveStatus.Awaiting
-        },
-        reason: String
-    },
+    approveStatus: [ApproveStatusSchema],
     userId: {
         type: Schema.Types.ObjectId,
         required: true
