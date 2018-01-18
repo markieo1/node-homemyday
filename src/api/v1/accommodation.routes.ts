@@ -113,17 +113,13 @@ routes.put('/:id/recommendation', authenticationMiddleware, adminMiddleware, exp
         throw new ApiError(400, 'Invalid ID!');
     }
 
-    let accommodation = await AccommodationService.getAccommodation(req.params.id);
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
 
     if (!accommodation) {
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    if (!accommodation.recommended) {
-        accommodation = await AccommodationService.updateRecommend(req.params.id);
-    } else {
-        accommodation = await AccommodationService.revertRecommend(req.params.id);
-    }
+    await AccommodationService.checkRecommendation(req.params.id);
 
     res.status(200).json(accommodation);
 }));

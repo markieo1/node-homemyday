@@ -59,6 +59,16 @@ export class AccommodationService {
         return accommodation;
     }
 
+    public static async checkRecommendation(id: string) {
+
+        let accommodation = await AccommodationService.getAccommodation(id);
+        if (!accommodation.recommended) {
+            accommodation = await AccommodationService.updateRecommend(id);
+        } else {
+            accommodation = await AccommodationService.revertRecommend(id);
+        }
+    }
+
     /**
      * Sets the recommended value of an accommodation to true
      * @param accommodation The object of accommodation.
