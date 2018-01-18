@@ -63,51 +63,18 @@ export class AccommodationService {
      * calls the correct service method based on the recommended value
      * @param id The object of accommodation.
      */
-    public static async updateRecommendation(id: string) {
+    public static async updateRecommendation(id: string, recommended: boolean) {
 
-        let accommodation = await AccommodationService.getAccommodation(id);
-        if (!accommodation.recommended) {
-            accommodation = await AccommodationService.updateRecommend(id);
-        } else {
-            accommodation = await AccommodationService.revertRecommend(id);
-        }
-    }
-
-    /**
-     * Sets the recommended value of an accommodation to true
-     * @param accommodation The object of accommodation.
-     */
-    public static async updateRecommend(id: string) {
-
-        const accommodation = await this.getAccommodation(id);
+        const accommodation = await AccommodationService.getAccommodation(id);
 
         if (!accommodation) {
             throw new AccommodationError('Accommodation not found!');
         }
 
-        accommodation.recommended = true;
+        const recommendedToUpdate = recommended;
+        accommodation.recommended = recommendedToUpdate;
 
         await accommodation.save();
-
-        return accommodation;
-    }
-
-    /**
-     * Sets the recommended value of an accommodation to false
-     * @param accommodation The object of accommodation.
-     */
-    public static async revertRecommend(id: string) {
-
-        const accommodation = await this.getAccommodation(id);
-
-        if (!accommodation) {
-            throw new AccommodationError('Accommodation not found!');
-        }
-
-        accommodation.recommended = false;
-
-        await accommodation.save();
-
         return accommodation;
     }
 

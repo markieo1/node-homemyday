@@ -119,7 +119,7 @@ routes.put('/:id/recommendation', authenticationMiddleware, adminMiddleware, exp
         throw new ApiError(404, 'Accommodation not found');
     }
 
-    await AccommodationService.updateRecommendation(req.params.id);
+    const updatedAccommodation = await AccommodationService.updateRecommendation(req.params.id, req.body.recommended);
 
     res.status(200).json(accommodation);
 }));
