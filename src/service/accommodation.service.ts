@@ -63,7 +63,7 @@ export class AccommodationService {
      * calls the correct service method based on the recommended value
      * @param id The object of accommodation.
      */
-    public static async callRecommendationFunction(id: string) {
+    public static async updateRecommendation(id: string) {
 
         let accommodation = await AccommodationService.getAccommodation(id);
         if (!accommodation.recommended) {
