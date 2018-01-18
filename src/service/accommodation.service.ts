@@ -1,3 +1,4 @@
+import { AccommodationError } from '../errors/accommodation.error';
 import { Accommodation, IAccommodationModel } from '../model/accommodation.model';
 import { ApproveStatus, IAccommodationDocument } from '../model/schemas/accommodation.schema';
 import { IApproveStatusDocument } from '../model/schemas/approvestatus.schema';
@@ -32,18 +33,28 @@ export class AccommodationService {
 
     /**
      * Sets the status and reason of the approveStatus of accommodation
-     * @param accommodation The object of accommodation.
+     * @param accommodationId The id of the accommmodation
      * @param approveStatus The approveStatus of accommodation.
+     * @param approveStatusReason The reason for rejectal
      */
-    public static async updateApproval(accommodation: IAccommodationDocument,
+    public static async updateApproval(accommodationId: string,
                                        approveStatus: ApproveStatus,
-                                       approveStatusReason: string) {
+                                       approveStatusReason?: string) {
+
+        const accommodation = await this.getAccommodation(accommodationId);
+
+        if (!accommodation) {
+            throw new AccommodationError('Accommodation not found!');
+        }
+
         const approveStatusToUpdate = {
             status: approveStatus,
             reason: approveStatusReason
         } as IApproveStatusDocument;
 
         accommodation.approveStatus = approveStatusToUpdate;
+
+        await accommodation.save();
 
         return accommodation;
     }
