@@ -139,8 +139,8 @@ routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAs
     }
 
     const updatedAccommodation = await AccommodationService.updateApproval(req.params.id,
-        req.body.approveStatus.status,
-        req.body.approveStatus.reason);
+        req.body.status,
+        req.body.reason);
 
     res.status(200).json(updatedAccommodation);
 }));
