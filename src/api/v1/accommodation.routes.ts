@@ -108,6 +108,22 @@ routes.post('/', authenticationMiddleware, expressAsync(async (req, res, next) =
     res.status(201).send(accommodation);
 }));
 
+routes.put('/:id/recommendation', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
+    if (!ValidationHelper.isValidMongoId(req.params.id)) {
+        throw new ApiError(400, 'Invalid ID!');
+    }
+
+    const accommodation = await AccommodationService.getAccommodation(req.params.id);
+
+    if (!accommodation) {
+        throw new ApiError(404, 'Accommodation not found');
+    }
+
+    const updatedAccommodation = await AccommodationService.updateRecommendation(req.params.id, req.body.recommended);
+
+    res.status(200).json(updatedAccommodation);
+}));
+
 routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {
     if (!ValidationHelper.isValidMongoId(req.params.id)) {
         throw new ApiError(400, 'Invalid ID!');

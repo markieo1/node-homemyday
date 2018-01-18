@@ -139,6 +139,36 @@ describe('Accommodation', () => {
             assert(accommodations.length === count);
         }));
 
+        it('Can recommend an accommodation', mochaAsync(async () => {
+            const response = await request(app)
+                .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send({ recommended: true})
+                .expect(200);
+
+            const recommendedAccommodation = response.body;
+            const updatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
+
+            assert(recommendedAccommodation != null);
+            assert(recommendedAccommodation.recommended === true);
+            assert(updatedAccommodation.recommended === true);
+        }));
+
+        it('Can undo changes of recommend an accommodation', mochaAsync(async () => {
+            const response = await request(app)
+                .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send({ recommended: false})
+                .expect(200);
+
+            const recommendedAccommodation = response.body;
+            const updatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
+
+            assert(recommendedAccommodation != null);
+            assert(recommendedAccommodation.recommended === false);
+            assert(updatedAccommodation.recommended === false);
+        }));
+
         it('Can approve an accommodation', mochaAsync(async () => {
             const response = await request(app)
                 .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')

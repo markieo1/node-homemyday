@@ -60,6 +60,25 @@ export class AccommodationService {
     }
 
     /**
+     * calls the correct service method based on the recommended value
+     * @param id The object of accommodation.
+     */
+    public static async updateRecommendation(id: string, recommended: boolean) {
+
+        const accommodation = await AccommodationService.getAccommodation(id);
+
+        if (!accommodation) {
+            throw new AccommodationError('Accommodation not found!');
+        }
+
+        const recommendedToUpdate = recommended;
+        accommodation.recommended = recommendedToUpdate;
+
+        await accommodation.save();
+        return accommodation;
+    }
+
+    /**
      * Gets all accommodations that match the given search parameters.
      * Will only return accommodations that can fit the requested amount of persons.
      * Will also only return accommodations which are not already booked in the requested timeframe.
