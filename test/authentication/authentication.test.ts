@@ -110,7 +110,7 @@ describe('Authentication', () => {
     it('Changes the user\'s password', mochaAsync(async () => {
         let response = await request(app).post('/api/v1/authentication/login').send({
             email: 'test@example.com',
-            password: 'Test Password',
+            password: 'Test Password'
         }).expect(200);
 
         const token = response.body.token;
@@ -118,9 +118,19 @@ describe('Authentication', () => {
         response = await request(app).post('/api/v1/authentication/changepassword')
             .set('Authorization', 'Bearer ' + token)
             .send({
-            password: 'Test Password',
+            oldPassword: 'Test Password',
             newPassword: 'Testttt',
         }).expect(204);
+
+        // Try to log in again with the new password
+        response = await request(app).post('/api/v1/authentication/login')
+            .send({
+            email: 'test@example.com',
+            password: 'Testttt'
+        }).expect(200);
+
+        assert(response.body);
+        assert(response.body.token);
 
     }));
 
