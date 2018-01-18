@@ -63,7 +63,13 @@ export class AccommodationService {
      * Sets the recommended value of an accommodation to true
      * @param accommodation The object of accommodation.
      */
-    public static async updateRecommend(id: string, accommodation: IAccommodationDocument) {
+    public static async updateRecommend(id: string) {
+
+        const accommodation = await this.getAccommodation(id);
+
+        if (!accommodation) {
+            throw new AccommodationError('Accommodation not found!');
+        }
 
         accommodation.recommended = true;
 
@@ -76,7 +82,13 @@ export class AccommodationService {
      * Sets the recommended value of an accommodation to false
      * @param accommodation The object of accommodation.
      */
-    public static async revertRecommend(id: string, accommodation: IAccommodationDocument) {
+    public static async revertRecommend(id: string) {
+
+        const accommodation = await this.getAccommodation(id);
+
+        if (!accommodation) {
+            throw new AccommodationError('Accommodation not found!');
+        }
 
         accommodation.recommended = false;
 

@@ -120,9 +120,9 @@ routes.put('/:id/recommendation', authenticationMiddleware, adminMiddleware, exp
     }
 
     if (!accommodation.recommended) {
-        accommodation = await AccommodationService.updateRecommend(req.params.id, accommodation);
+        accommodation = await AccommodationService.updateRecommend(req.params.id);
     } else {
-        accommodation = await AccommodationService.revertRecommend(req.params.id, accommodation);
+        accommodation = await AccommodationService.revertRecommend(req.params.id);
     }
 
     res.status(200).json(accommodation);
