@@ -63,13 +63,14 @@ export class AccommodationService {
         // Filters out any accommodations that are already booked within the given timeframe.
         // https://stackoverflow.com/a/26877645/3714134
         return await Accommodation.find({
-            location: { $regex: location, $options: 'i' },
-            maxPersons: { $gte: persons },
-            bookings: {
+            'location': { $regex: location, $options: 'i' },
+            'maxPersons': { $gte: persons },
+            'bookings': {
                 $not: {
                     $elemMatch: { dateFrom: { $lt: to }, dateTo: { $gt: from } }
                 }
-            }
+            },
+            'approveStatus.status': ApproveStatus.Approved
         });
     }
 
