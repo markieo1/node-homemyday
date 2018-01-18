@@ -57,6 +57,15 @@ export class AccommodationService {
         return accommodation;
     }
 
+    public static async RevertRecommend(accommodation: IAccommodationDocument, recommendedValue: boolean) {
+
+        recommendedValue = false;
+
+        accommodation.recommended = recommendedValue;
+
+        return accommodation;
+    }
+
     /**
      * Gets all accommodations that match the given search parameters.
      * Will only return accommodations that can fit the requested amount of persons.
