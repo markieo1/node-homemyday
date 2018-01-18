@@ -140,38 +140,32 @@ describe('Accommodation', () => {
         }));
 
         it('Can recommend an accommodation', mochaAsync(async () => {
-            const accommodation = await AccommodationService.getAccommodation(accommodationId);
-            accommodation.recommended = true;
 
             const response = await request(app)
                 .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
                 .set('Authorization', `Bearer ${adminUserToken}`)
-                .send(accommodation)
+                .send({ recommended: true })
                 .expect(200);
 
             const recommendedAccommodation = response.body;
 
             const UpdatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
 
-            assert(accommodation !== null);
             assert(recommendedAccommodation.recommended === true);
             assert(UpdatedAccommodation.recommended === true);
         }));
 
         it('Can recommend an accommodation', mochaAsync(async () => {
-            const accommodation = await AccommodationService.getAccommodation(accommodationId);
-            accommodation.recommended = false;
-
             const response = await request(app)
                 .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
                 .set('Authorization', `Bearer ${adminUserToken}`)
-                .send(accommodation)
+                .send({ recommended: false})
                 .expect(200);
 
             const recommendedAccommodation = response.body;
             const UpdatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
 
-            assert(accommodation !== null);
+            assert(recommendedAccommodation != null);
             assert(recommendedAccommodation.recommended === false);
             assert(UpdatedAccommodation.recommended === false);
         }));
