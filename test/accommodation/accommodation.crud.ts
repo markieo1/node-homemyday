@@ -151,8 +151,29 @@ describe('Accommodation', () => {
 
             const recommendedAccommodation = response.body;
 
+            const UpdatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
+
             assert(accommodation !== null);
             assert(recommendedAccommodation.recommended === true);
+            assert(UpdatedAccommodation.recommended === true);
+        }));
+
+        it('Can recommend an accommodation', mochaAsync(async () => {
+            const accommodation = await AccommodationService.getAccommodation(accommodationId);
+            accommodation.recommended = false;
+
+            const response = await request(app)
+                .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
+                .set('Authorization', `Bearer ${adminUserToken}`)
+                .send(accommodation)
+                .expect(200);
+
+            const recommendedAccommodation = response.body;
+            const UpdatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
+
+            assert(accommodation !== null);
+            assert(recommendedAccommodation.recommended === false);
+            assert(UpdatedAccommodation.recommended === false);
         }));
 
         it('Can approve an accommodation', mochaAsync(async () => {

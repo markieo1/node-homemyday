@@ -48,20 +48,28 @@ export class AccommodationService {
         return accommodation;
     }
 
-    public static async updateRecommend(accommodation: IAccommodationDocument, recommendedValue: boolean) {
+    /**
+     * Sets the recommended value of an accommodation to true
+     * @param accommodation The object of accommodation.
+     */
+    public static async updateRecommend(id: string, accommodation: IAccommodationDocument) {
 
-        recommendedValue = true;
+        accommodation.recommended = true;
 
-        accommodation.recommended = recommendedValue;
+        await accommodation.save();
 
         return accommodation;
     }
 
-    public static async RevertRecommend(accommodation: IAccommodationDocument, recommendedValue: boolean) {
+    /**
+     * Sets the recommended value of an accommodation to false
+     * @param accommodation The object of accommodation.
+     */
+    public static async revertRecommend(id: string, accommodation: IAccommodationDocument) {
 
-        recommendedValue = false;
+        accommodation.recommended = false;
 
-        accommodation.recommended = recommendedValue;
+        await accommodation.save();
 
         return accommodation;
     }
