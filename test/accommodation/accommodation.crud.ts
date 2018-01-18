@@ -134,7 +134,7 @@ describe('Accommodation', () => {
                 .expect(200);
 
             const accommodations = response.body;
-            const count = await Accommodation.count({'approveStatus.status': ApproveStatus.Awaiting});
+            const count = await Accommodation.count({ 'approveStatus.status': ApproveStatus.Awaiting });
             assert(accommodations !== null);
             assert(accommodations.length === count);
         }));
@@ -173,10 +173,10 @@ describe('Accommodation', () => {
 
         it('Tries to approve an accommodation without being admin', mochaAsync(async () => {
             const response = await request(app)
-            .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')
-            .set('Authorization', `Bearer ${userToken}`)
-            .send({status: ApproveStatus.Approved})
-            .expect(401);
+                .put('/api/v1/accommodations/' + awaitingAccommodationId + '/approval')
+                .set('Authorization', `Bearer ${userToken}`)
+                .send({ status: ApproveStatus.Approved })
+                .expect(401);
 
             const err = response.body;
 
@@ -259,6 +259,22 @@ describe('Accommodation', () => {
 
             const accommodations = response.body;
 
+            assert(accommodations.length === 0);
+        }));
+
+        it('Can\'t find an accommodation that has not been approved yet.', mochaAsync(async () => {
+            const response = await request(app)
+                .get('/api/v1/accommodations')
+                .query({
+                    search: 'Athens',
+                    dateFrom: '2017-03-01',
+                    dateTo: '2017-03-07',
+                    persons: 2
+                })
+                .expect(200);
+
+            const accommodations = response.body;
+            assert(accommodations);
             assert(accommodations.length === 0);
         }));
 
