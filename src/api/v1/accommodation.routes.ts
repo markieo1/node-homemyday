@@ -121,7 +121,7 @@ routes.put('/:id/recommendation', authenticationMiddleware, adminMiddleware, exp
 
     const updatedAccommodation = await AccommodationService.updateRecommendation(req.params.id, req.body.recommended);
 
-    res.status(200).json(accommodation);
+    res.status(200).json(updatedAccommodation);
 }));
 
 routes.put('/:id/approval', authenticationMiddleware, adminMiddleware, expressAsync(async (req, res, next) => {

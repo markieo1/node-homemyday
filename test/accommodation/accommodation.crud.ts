@@ -150,7 +150,7 @@ describe('Accommodation', () => {
             const updatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
 
             assert(recommendedAccommodation != null);
-            assert(recommendedAccommodation.recommended === false);
+            assert(recommendedAccommodation.recommended === true);
             assert(updatedAccommodation.recommended === true);
         }));
 
