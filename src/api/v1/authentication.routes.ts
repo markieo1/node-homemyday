@@ -6,6 +6,7 @@ import { IUserDocument } from '../../model/schemas/user.schema';
 import User from '../../model/user.model';
 import { AuthenticationService } from '../../service/authentication.service';
 import { expressAsync } from '../../utils/express.async';
+import { authenticationMiddleware } from '../middleware/authentication.middleware';
 
 const routes = express.Router();
 
@@ -40,13 +41,12 @@ routes.post('/register', expressAsync(async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const user = new User({
-        email,
-        password
-    });
+    if (!email || !password) {
+        throw new ApiError(400, 'email and password are required!');
+    }
 
     try {
-        await user.save();
+        await AuthenticationService.registerUser(email, password);
     } catch (e) {
         if (e.name === 'ValidationError') {
             throw new ApiError(400, e.message);
@@ -56,6 +56,29 @@ routes.post('/register', expressAsync(async (req, res, next) => {
     }
 
     res.status(201).end();
+}));
+
+routes.post('/changepassword', authenticationMiddleware, expressAsync(async (req, res, next) => {
+
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    if (!oldPassword || !newPassword ) {
+        throw new ApiError(400, 'oldPassword and newPassword are required!');
+    }
+
+    // Change password
+    try {
+        await AuthenticationService.changePassword(req.authenticatedUser.id, oldPassword, newPassword);
+    } catch (e) {
+        if (e instanceof AuthenticationError) {
+            throw new ApiError(400, e.message);
+        } else {
+            throw e;
+        }
+    }
+
+    res.status(204).end();
 }));
 
 export default routes;

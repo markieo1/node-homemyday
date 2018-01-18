@@ -107,6 +107,33 @@ describe('Authentication', () => {
         assert(errors[0] === 'Token decoding failed');
     }));
 
+    it('Changes the user\'s password', mochaAsync(async () => {
+        let response = await request(app).post('/api/v1/authentication/login').send({
+            email: 'test@example.com',
+            password: 'Test Password'
+        }).expect(200);
+
+        const token = response.body.token;
+
+        response = await request(app).post('/api/v1/authentication/changepassword')
+            .set('Authorization', 'Bearer ' + token)
+            .send({
+            oldPassword: 'Test Password',
+            newPassword: 'Testttt',
+        }).expect(204);
+
+        // Try to log in again with the new password
+        response = await request(app).post('/api/v1/authentication/login')
+            .send({
+            email: 'test@example.com',
+            password: 'Testttt'
+        }).expect(200);
+
+        assert(response.body);
+        assert(response.body.token);
+
+    }));
+
     it('Returns a 400 if tried to login with a nonexisting email', mochaAsync(async () => {
         const response = await request(app).post('/api/v1/authentication/login').send({
             email: 'random@random.com',
