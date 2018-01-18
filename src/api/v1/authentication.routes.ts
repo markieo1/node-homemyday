@@ -67,9 +67,9 @@ routes.post('/changepassword', authenticationMiddleware, expressAsync(async (req
         throw new ApiError(400, 'oldPassword and newPassword are required!');
     }
 
-    // Confirm old password
+    // Change password
     try {
-        await AuthenticationService.authenticateUser(req.authenticatedUser.email, oldPassword);
+        await AuthenticationService.changePassword(req.authenticatedUser.id, oldPassword, newPassword);
     } catch (e) {
         if (e instanceof AuthenticationError) {
             throw new ApiError(400, e.message);
@@ -77,9 +77,6 @@ routes.post('/changepassword', authenticationMiddleware, expressAsync(async (req
             throw e;
         }
     }
-
-    // At this point, authentication is successful. Change password.
-    await AuthenticationService.changePassword(req.authenticatedUser, newPassword);
 
     res.status(204).end();
 }));

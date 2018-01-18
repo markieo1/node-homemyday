@@ -47,10 +47,18 @@ export class AuthenticationService {
 
     /**
      * Changes a user's password.
-     * @param user The user to change the password for.
+     * @param user The ID of the user to change the password for.
+     * @param oldPassword The user's old password, for confirmation.
      * @param newPassword The new desired password.
      */
-    public static async changePassword(user: IUserDocument, newPassword: string) {
+    public static async changePassword(userId: string, oldPassword: string, newPassword: string) {
+        const user = await User.findById(userId);
+        const authenticated = await user.comparePassword(oldPassword);
+
+        if (!authenticated) {
+            throw new AuthenticationError('Old password is invalid!');
+        }
+
         user.password = newPassword;
 
         return await user.save();
