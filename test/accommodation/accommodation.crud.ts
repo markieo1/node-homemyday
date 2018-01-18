@@ -140,18 +140,17 @@ describe('Accommodation', () => {
         }));
 
         it('Can recommend an accommodation', mochaAsync(async () => {
-
             const response = await request(app)
                 .put('/api/v1/accommodations/' + accommodationId + '/recommendation')
                 .set('Authorization', `Bearer ${adminUserToken}`)
-                .send({ recommended: true })
+                .send({ recommended: true})
                 .expect(200);
 
             const recommendedAccommodation = response.body;
-
             const updatedAccommodation = await AccommodationService.getAccommodation(accommodationId);
 
-            assert(recommendedAccommodation.recommended === true);
+            assert(recommendedAccommodation != null);
+            assert(recommendedAccommodation.recommended === false);
             assert(updatedAccommodation.recommended === true);
         }));
 
