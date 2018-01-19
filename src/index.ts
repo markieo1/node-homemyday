@@ -5,11 +5,27 @@ import * as http from 'http';
 import mongoose = require('mongoose');
 import * as logger from 'morgan';
 import * as apiRoutes from './api';
-import { ApiError } from './api/errors';
 import { Config } from './config/config.const';
+import { ApiError, AuthenticationError } from './errors';
+import { SeedService } from './service/seed.service';
 
 const port = Config.port;
 const app = express();
+
+mongoose.Promise = global.Promise;
+
+if (process.env.NODE_ENV !== 'test') {
+    // Connect to MongoDB.
+    mongoose.connect(Config.mongoDbUri,
+        { useMongoClient: true })
+        .then(() => {
+            SeedService.seed();
+        });
+    mongoose.connection.on('error', (error) => {
+        console.error('MongoDB connection error. Please make sure MongoDB is running.', error);
+        process.exit(1);
+    });
+}
 
 app.use(helmet());
 
@@ -24,7 +40,7 @@ app.use((req, res, next) => {
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Cache-Control,X-Requested-With,content-type, Authorization');
 
     if ('OPTIONS' === req.method) {
         res.sendStatus(200);
@@ -45,6 +61,15 @@ app.use('*', (req, res) => {
 app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error('An error has occured!', err.message);
     next(err);
+});
+
+app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof AuthenticationError) {
+        const authError = err as AuthenticationError;
+        next(new ApiError(401, authError.message));
+    } else {
+        next(err);
+    }
 });
 
 app.use((err, req: express.Request, res: express.Response, next: express.NextFunction) => {
