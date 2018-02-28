@@ -5,6 +5,11 @@ export interface IConfig {
     port: number;
 
     /**
+     * The default port the server listens on for https
+     */
+    httpsPort: number;
+
+    /**
      * The default connection to mongodb if none other was specified
      */
     mongoDbUri: string;
@@ -28,4 +33,14 @@ export interface IConfig {
      * The default image path for accommodations
      */
     imagePath: string;
+
+    /**
+     * The path to the private key for ssl
+     */
+    sslPrivateKeyPath: string;
+
+    /**
+     * The path to the certficate for ssl
+     */
+    sslCertPath: string;
 }

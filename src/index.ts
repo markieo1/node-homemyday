@@ -1,7 +1,9 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as fs from 'fs';
 import * as helmet from 'helmet';
 import * as http from 'http';
+import * as https from 'https';
 import mongoose = require('mongoose');
 import * as logger from 'morgan';
 import * as apiRoutes from './api';
@@ -113,8 +115,16 @@ app.use((err, req: express.Request, res: express.Response, next: express.NextFun
     });
 });
 
-const server = app.listen(port, () => {
+const httpServer = http.createServer(app).listen(port, () => {
     console.log(`Started listening on port ${port}`);
+});
+
+const privateKey = fs.readFileSync(Config.sslPrivateKeyPath, 'utf8');
+const certificate = fs.readFileSync(Config.sslCertPath, 'utf8');
+const credentials = { key: privateKey, cert: certificate };
+
+const httpsServer = https.createServer(credentials, app).listen(Config.httpsPort, () => {
+    console.log(`Started listening on port ${Config.httpsPort}`);
 });
 
 // Handle ^C
@@ -123,8 +133,10 @@ process.on('SIGINT', shutdown);
 // Do graceful shutdown
 function shutdown() {
     mongoose.disconnect().then(() => {
-        server.close(() => {
-            console.log('Evertyhing shutdown');
+        httpServer.close(() => {
+            httpsServer.close(() => {
+                console.log('Evertyhing shutdown');
+            });
         });
     });
 }

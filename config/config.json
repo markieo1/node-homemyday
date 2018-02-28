@@ -1,8 +1,11 @@
 {
     "port": 3000,
+    "httpsPort": 443,
     "mongoDbUri": "mongodb://localhost:27017/homemyday",
     "allowOrigin": "*",
     "secret": "changethis",
     "expirationSeconds": 86400,
-    "imagePath": "./uploads/"
+    "imagePath": "./uploads/",
+    "sslPrivateKeyPath": "certificates/localhost.key",
+    "sslCertPath": "certificates/localhost.crt"
 }
