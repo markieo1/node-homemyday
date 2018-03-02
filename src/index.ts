@@ -119,11 +119,18 @@ const httpServer = http.createServer(app).listen(port, () => {
     console.log(`Started listening on port ${port}`);
 });
 
-const privateKey = fs.readFileSync(Config.sslPrivateKeyPath, 'utf8');
-const certificate = fs.readFileSync(Config.sslCertPath, 'utf8');
-const credentials = { key: privateKey, cert: certificate };
+const pfxFile = fs.readFileSync(Config.sslPfxPath);
+const pfxPassword = Config.sslPfxPassword;
+const clientCertificate = fs.readFileSync(Config.clientCertPath, 'utf8');
+const options = {
+    pfx: pfxFile,
+    passphrase: pfxPassword,
+    ca: clientCertificate,
+    requestCert: true,
+    rejectUnauthorized: true
+};
 
-const httpsServer = https.createServer(credentials, app).listen(Config.httpsPort, () => {
+const httpsServer = https.createServer(options, app).listen(Config.httpsPort, () => {
     console.log(`Started listening on port ${Config.httpsPort}`);
 });
 
