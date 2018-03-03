@@ -1,8 +1,12 @@
 {
-    "port": 3000,
-    "mongoDbUri": "mongodb://localhost:27017/homemyday",
-    "allowOrigin": "*",
-    "secret": "changethis",
-    "expirationSeconds": 86400,
-    "imagePath": "./uploads/"
+  "port": 3000,
+  "httpsPort": 4443,
+  "mongoDbUri": "mongodb://localhost:27017/homemyday",
+  "allowOrigin": "*",
+  "secret": "changethis",
+  "expirationSeconds": 86400,
+  "imagePath": "./uploads/",
+  "sslPfxPath": "certificates/node-server.pfx",
+  "sslPfxPassword": "node-server",
+  "clientCertPath": "certificates/asp-client.crt"
 }
