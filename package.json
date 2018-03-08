@@ -43,7 +43,8 @@
     "qrcode": "^1.2.0",
     "speakeasy": "^2.0.0",
     "typescript": "^2.6.1",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "winston": "^3.0.0-rc1"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.44",
