@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import express = require('express');
+import expressBrute = require('express-brute');
 import { ValidationError } from 'mongoose';
 import { ApiError, AuthenticationError } from '../../errors/index';
 import { IUserDocument } from '../../model/schemas/user.schema';
@@ -8,10 +9,24 @@ import { AuthenticationService } from '../../service/authentication.service';
 import { expressAsync } from '../../utils/express.async';
 import { authenticationMiddleware } from '../middleware/authentication.middleware';
 
+const store = new expressBrute.MemoryStore();
+const failCallback = (req, res, next, nextValidRequestDate) => {
+  req.flash('error', 'You have made too many failed attempts in a short period of time, please try again '
+  + 'after: ' + (nextValidRequestDate).fromNow());
+  res.redirect('/login'); // brute force protection triggered, send them back to the login page 
+};
+const bruteforce = new expressBrute(store, {
+  freeRetries: 5,
+  minWait: 30 * 1000,
+  maxWait: 60 * 60 * 1000,
+  failCallback: this.failCallback
+});
+
 const routes = express.Router();
 
 routes.post(
   '/login',
+  bruteforce.prevent,
   expressAsync(async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
