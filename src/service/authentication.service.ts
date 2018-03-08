@@ -1,10 +1,18 @@
 import * as jwt from 'jsonwebtoken';
+import * as owaspPasswordStrength from 'owasp-password-strength-test';
 import * as speakeasy from 'speakeasy';
 import { Config } from '../config/config.const';
 import { AuthenticationError } from '../errors/index';
 import { IUserToken } from '../model/iusertoken.interface';
 import { IUserDocument } from '../model/schemas/user.schema';
 import { IUserModel, User } from '../model/user.model';
+
+owaspPasswordStrength.config({
+  allowPassphrases: true,
+  minLength: 10,
+  minPhraseLength: 20,
+  minOptionalTestsToPass: 4
+});
 
 export class AuthenticationService {
   /**
@@ -63,6 +71,13 @@ export class AuthenticationService {
     email: string,
     password: string
   ): Promise<IUserDocument> {
+    const testResult = owaspPasswordStrength.test(password);
+
+    if (!testResult.strong) {
+      // Password not strong enough
+      throw new AuthenticationError('Password not strong enough!');
+    }
+
     const user = new User({
       email,
       password
@@ -87,6 +102,13 @@ export class AuthenticationService {
 
     if (!authenticated) {
       throw new AuthenticationError('Old password is invalid!');
+    }
+
+    const testResult = owaspPasswordStrength.test(newPassword);
+
+    if (!testResult.strong) {
+      // Password not strong enough
+      throw new AuthenticationError('Password not strong enough!');
     }
 
     user.password = newPassword;

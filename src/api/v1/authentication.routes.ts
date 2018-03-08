@@ -71,11 +71,7 @@ routes.post(
     try {
       await AuthenticationService.registerUser(email, password);
     } catch (e) {
-      if (e.name === 'ValidationError') {
-        throw new ApiError(400, e.message);
-      } else {
-        throw e;
-      }
+      throw new ApiError(400, e ? e.message : null);
     }
 
     res.status(201).end();
